@@ -1,0 +1,18 @@
+{
+    "Lua.diagnostics.globals": [
+        "DEFAULT_CHAT_FRAME",
+        "tostringall",
+        "NAME",
+        "ExpansionLandingPageMixin",
+        "ExpansionLandingPage",
+        "SetDesaturation",
+        "ShowGarrisonLandingPage",
+        "GarrisonLandingPage",
+        "PlayerTalentFrame",
+        "MajorFactionRenownFrame",
+        "CovenantCallings",
+        "unpack"
+    ],
+    "Lua.diagnostics.disable": [
+    ]
+}

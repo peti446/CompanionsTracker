@@ -1,0 +1,23 @@
+## Interface: 100200
+## Title: Companions Tracker
+## Author: Geloch (Sanguino - EU Horde)
+## Version: @project-version@
+## Notes: Allows you to track all followers/companions missions from all expansions, and get notifications when missions complete
+## LoadOnDemand: 0
+## SavedVariables: CompanionsTrackerDB
+## X-Curse-Project-ID: 944606
+
+embeds_libs.xml
+embeds_locales.xml
+CompanionsTracker.lua
+
+Utils/Utils.lua
+Utils/Config.lua
+
+GUI/Widgets/ArchaeologyCheckButton.lua
+GUI/MinimapIcon.lua
+GUI/Blizzard/ExpansionLandingPageMixin.lua
+
+
+GlobalEvents.lua
+Init.lua
