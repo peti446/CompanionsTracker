@@ -25,6 +25,10 @@ for x in "${!translationStrings[@]}"; do
 	printf "L[\"%s\"] = %s\n" "$x" "${translationStrings[$x]}" >> "$translationTempFile"
 done
 
+if [ ! -s $translationTempFile ]; then
+  exit 0
+fi
+
 #language: "enUS", //[enUS, deDE, esES, ect], Required, No Default
 #       namespace: "toc", //Any namespace name, comma delimited. Default: Base Namespace
 #       formatType: TableAdditions, //['GlobalStrings','TableAdditions','SimpleTable']. Default: TableAdditions
