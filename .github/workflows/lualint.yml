@@ -4,6 +4,7 @@ on: 'push'
 
 jobs:
     Lint-Project:
+      if: startsWith(github.ref, 'refs/tags/v') == false
       runs-on: ubuntu-latest
       steps:
        - name: "Update Image"
