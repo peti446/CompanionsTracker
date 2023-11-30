@@ -49,6 +49,7 @@ local function GetVersionNumber(str)
     end
 
     if(type(str) == "string") then
+        str = string.gsub(str, "v", "")
         -- Remove beta and alpha form string and add respective number to the str
         local extraNumber = 0.003
         local typeMatch, subVer = string.match(str, "([ab])(%d*)")
@@ -81,7 +82,7 @@ end
 Config.InternalVersion = GetVersionNumber("@project-version@")
 --@end-non-debug@]===]
 --@debug@
-Config.InternalVersion = 0.012
+Config.InternalVersion = GetVersionNumber("v0.1.1")
 --@end-debug@
 
 
