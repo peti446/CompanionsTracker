@@ -11,5 +11,6 @@ jobs:
                 fetch-depth: 50
             - name: Upload locales strings to CurseForge
               run: ./CurseForge_UpldateTranslations.sh
+              working-directory: ${{ github.workspace }}
               env:
                 CF_API_KEY: ${{ secrets.CF_API_KEY }}
