@@ -7,7 +7,7 @@ fi
 declare -A translationStrings
 translationTempFile=$(mktemp)
 regex='L\[\"([^]]+)\"\]'
-projectID=299998
+projectID=944606
 
 process_addon_translations(){
 while read -r line || [ -n "$line" ] ; do
