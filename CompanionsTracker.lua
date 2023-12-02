@@ -16,7 +16,7 @@ ns.LibDBIcon = LibDBIcon
 ns.AceGUI = AceGUI
 
 --@debug@
-_G.CompanionsTracker = CompanionsTracker
+_G.CompanionsTracker = ns
 --@end-debug@
 
 -- Set up other namespace variables

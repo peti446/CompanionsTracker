@@ -6,6 +6,9 @@ local CompanionsTracker = ns.CompanionsTracker
 --- @type AceGUI-3.0
 local AceGUI = ns.AceGUI
 
+--- @Type CompanionsTrackerUtils
+local Utils = ns.Utils
+
 --- @class ExpansionLandingPageMixin
 local ExpansionLandingPageMixin = {
     RequieredAddon = "Blizzard_GarrisonUI"
@@ -65,10 +68,14 @@ local function OnExpanionTabValueChanged(self, _event, checked)
     if(checked) then
         -- Needed as Shadowlands has some issues ):
         if(GarrisonLandingPage) then
-            local subPanelsToHide = {"SoulbindPanel", "CovenantCallings", "ArdenwealdGardeningPanel"}
+            local subPanelsToHide = {"SoulbindPanel", "CovenantCallings", "ArdenwealdGardeningPanel", "FollowerTab.CovenantFollowerPortraitFrame"}
             for _, panelName in ipairs(subPanelsToHide) do
-                local panel = GarrisonLandingPage[panelName]
-                if(panel) then
+                local stringNames = Utils:Split(panelName, ".")
+                local panel = GarrisonLandingPage
+                for _, name in ipairs(stringNames) do
+                    panel = panel and panel[name]
+                end
+                if(panel and panel ~= GarrisonLandingPage) then
                     if(expansionID == Enum.GarrisonType.Type_9_0_Garrison) then
                         panel:Show()
                     else
@@ -79,6 +86,12 @@ local function OnExpanionTabValueChanged(self, _event, checked)
         end
 
         ShowGarrisonLandingPage(expansionID)
+
+        -- Blizzard ??????
+        if(GarrisonLandingPageTab3) then
+            GarrisonLandingPageTab3:SetScript("OnLeave", nil)
+            GarrisonLandingPageTab3:SetScript("OnEnter", nil)
+        end
     end
 end
 
@@ -127,6 +140,9 @@ function ExpansionLandingPageMixin:OnShow()
     --- @class AceGUISimpleGroup
     --- @field children ArchaeologyCheckButton[]
     ExpansionLandingPageMixin.UI = group
+    RunNextFrame(function()
+        ExpansionLandingPageMixin.UI:DoLayout()
+    end)
 end
 
 --- Call back to be called when the ExpansionLandingPage is hidden, to clear up the UI

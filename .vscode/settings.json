@@ -11,7 +11,11 @@
         "PlayerTalentFrame",
         "MajorFactionRenownFrame",
         "CovenantCallings",
-        "unpack"
+        "unpack",
+        "RunNextFrame",
+        "GarrisonLandingPageTab3",
+        "GarrisonLandingPageShipFollowerList",
+        "GarrisonShipyardFrame"
     ],
     "Lua.diagnostics.disable": [
     ]

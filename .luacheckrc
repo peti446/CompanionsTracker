@@ -95,6 +95,9 @@ read_globals = {
     'GameFontWhite',
     'TooltipDataProcessor',
     'ExpansionLandingPage',
+    "GarrisonLandingPageTab3",
+    "GarrisonLandingPageShipFollowerList",
+    "GarrisonShipyardFrame",
 
     -- Default From File
     '101_CutsceneName_Ref',

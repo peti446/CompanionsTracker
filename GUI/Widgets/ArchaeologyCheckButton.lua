@@ -30,7 +30,6 @@ end
 local methods =
 {
 	["OnAcquire"] = function(self)
-        self.frame:Show()
         self:SetChecked(false)
     end,
     ["GetChecked"] = function(self)

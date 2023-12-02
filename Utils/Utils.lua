@@ -22,8 +22,20 @@ function Utils:FindLastInString(str, value)
     if i==nil then return nil else return i-1 end
 end
 
-
-
+---Splits a strng and returns a table
+---@param inputstr string the string to separate
+---@param sep string separator
+---@return table
+function Utils:Split(inputstr, sep)
+    if sep == nil then
+        sep = "%s"
+    end
+    local t={}
+    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+        table.insert(t, str)
+    end
+    return t
+end
 
 --- Prints any text to the chat, only if debug is enabled
 --- @vararg any
@@ -78,16 +90,31 @@ end
 --- @param tbl table
 --- @param indent number
 function Utils:PrintTable(tbl, indent)
-    if not indent then indent = 0 end
-    if type(tbl) == 'table' then
+    if(type(ns.Config.db) == "table" and not ns.Config.db.profile.debug) then
+        return
+    end
+
+    if(tbl == nil) then
+        self:Print("Table is null")
+        return
+    end
+
+    if not indent or indent <= 1 then
+        indent = 1
+        self:Print("Table:")
+        print("{")
+    end
+
+    if type(tbl) == "table" then
         for k, v in pairs(tbl) do
-            local formatting = string.rep("  ", indent) .. k .. ": "
+            local formatting =  string.rep("  ", indent) .. k .. ": "
             if type(v) == "table" then
-                self:Print(formatting)
+                print(formatting .. "{")
                 self:PrintTable(v, indent+1)
             else
-                self:Print(formatting .. tostring(v))
+                print(formatting .. tostring(v))
             end
         end
     end
+    print(string.rep("  ", max(indent - 1, 0)) .. "}")
 end
