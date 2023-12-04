@@ -11,6 +11,7 @@ local Config = ns.Config
 
 function CompanionsTracker:OnInitialize()
     Config:Init()
+    self:RegisterOptionsGUI()
 
     -- Register Global Events
     self:RegisterEvent("ADDON_LOADED")

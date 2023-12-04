@@ -15,7 +15,21 @@
         "RunNextFrame",
         "GarrisonLandingPageTab3",
         "GarrisonLandingPageShipFollowerList",
-        "GarrisonShipyardFrame"
+        "GarrisonShipyardFrame",
+        "AddonCompartmentFrame",
+        "NORMAL_FONT_COLOR",
+        "GameFontNormal",
+        "GameFontHighlight",
+        "ACCEPT",
+        "CANCEL",
+        "Settings",
+        "InterfaceOptions_AddCategory",
+        "GameFontHighlightLarge",
+        "GameFontHighlightSmall",
+        "RED_FONT_COLOR_CODE",
+        "MP",
+        "NORMAL_FONT_COLOR_CODE",
+        "InterfaceOptionsFrame_OpenToCategory"
     ],
     "Lua.diagnostics.disable": [
     ]

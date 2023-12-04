@@ -1,3 +1,4 @@
+
 local AddonName, ns = ...
 
 --- @class CompanionsTrackerUtils
@@ -37,11 +38,31 @@ function Utils:Split(inputstr, sep)
     return t
 end
 
+--- Converts a icon path to a string that can be used in the chat to display the icon
+--- @param iconPath string
+--- @param width number
+--- @param height number
+--- @return string
+function Utils:GetIconStr(iconPath, width, height)
+    return string.format("|T%s:%d:%d|t", iconPath, width, height)
+end
+
+--- Colors the given string with the given color
+---@param color string|table{r:number, g:number, b:number, a:number}
+---@param text string
+---@return string
+function Utils:ColorStr(text, color)
+    if(type(color) == "table") then
+        color = string.format("%02x%02x%02x%02x", color.a * 255, color.r * 255, color.g * 255, color.b * 255)
+    end
+    return string.format("|c%s%s|r", color, text)
+end
+
 --- Prints any text to the chat, only if debug is enabled
 --- @vararg any
 function Utils:DebugPrint(...)
     if(type(ns.Config.db) ~= "table" or ns.Config.db.profile.debug) then
-        self:Print(" ", "|cFFFF0000(DEBUG)|r", ...)
+        self:Print(" " .. "|cFFFF0000(DEBUG)|r" .. tostringall(... or "nil"))
     end
 end
 
@@ -90,10 +111,6 @@ end
 --- @param tbl table
 --- @param indent number
 function Utils:PrintTable(tbl, indent)
-    if(type(ns.Config.db) == "table" and not ns.Config.db.profile.debug) then
-        return
-    end
-
     if(tbl == nil) then
         self:Print("Table is null")
         return

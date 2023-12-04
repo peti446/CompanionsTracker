@@ -13,9 +13,12 @@ CompanionsTracker.lua
 
 Utils/Utils.lua
 Utils/Config.lua
+Utils/GarrisonWindow.lua
+Utils/ConstsHelpers.lua
 
-GUI/Widgets/ArchaeologyCheckButton.lua
+GUI/InterfaceOptions.lua
 GUI/MinimapIcon.lua
+GUI/Widgets/ArchaeologyCheckButton.lua
 GUI/Blizzard/ExpansionLandingPageMixin.lua
 
 

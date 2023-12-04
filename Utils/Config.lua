@@ -21,6 +21,7 @@ local Defaults =
         ["minimap"] =
         {
             ["hide"] = false,
+            ["quickAccessExpansionID"] = Enum.GarrisonType.Type_9_0_Garrison,
         }
     },
     char =
@@ -33,7 +34,7 @@ Config.db = {}
 
 --- Initialize the DB
 function Config:Init()
-    Config.db = LibStub("AceDB-3.0"):New("CompanionsTracker", Defaults)
+    Config.db = LibStub("AceDB-3.0"):New("CompanionsTrackerDB", Defaults)
     self:Update()
 end
 
