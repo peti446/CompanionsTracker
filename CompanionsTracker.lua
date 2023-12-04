@@ -37,30 +37,35 @@ CompanionsTracker.Mixins = {}
 --- @field backbroundColor table
 --- @field garrisonID number
 --- @field displayName string
+--- @field followerTypes table<number, number>
 Constants.GarrionData = {
     {
         imagePath = "Interface\\AddOns\\CompanionsTracker\\Media\\Icons\\draenor_logo",
         backbroundColor = {1.0, 0.0, 0.0},
         garrisonID = Enum.GarrisonType.Type_6_0_Garrison,
         displayName = L["Draenor"],
+        followerTypes = {Enum.GarrisonFollowerType.FollowerType_6_0_GarrisonFollower, Enum.GarrisonFollowerType.FollowerType_6_0_Boat}
     },
     {
         imagePath = "Interface\\AddOns\\CompanionsTracker\\Media\\Icons\\legion_logo",
         backbroundColor = {0.0, 1.0, 0.0},
         garrisonID = Enum.GarrisonType.Type_7_0_Garrison,
         displayName = L["Legion"],
+        followerTypes = {Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower}
     },
     {
         imagePath = "Interface\\AddOns\\CompanionsTracker\\Media\\Icons\\bfa_logo",
         backbroundColor = {1, 1, 1},
         garrisonID = Enum.GarrisonType.Type_8_0_Garrison,
         displayName = L["Battle for Azeroth"],
+        followerTypes = {Enum.GarrisonFollowerType.FollowerType_8_0_GarrisonFollower}
     },
     {
         imagePath = "Interface\\AddOns\\CompanionsTracker\\Media\\Icons\\shadowlands_logo",
         backbroundColor = {1.0, 0.47, 0.33},
         garrisonID = Enum.GarrisonType.Type_9_0_Garrison,
         displayName = L["Shadowlands"],
+        followerTypes = {Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower}
     },
 }
 -- Sad, this is because of Toshrael ):

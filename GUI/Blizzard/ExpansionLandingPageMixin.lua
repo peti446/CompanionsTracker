@@ -12,6 +12,8 @@ local Utils = ns.Utils
 --- @type CompanionsTrackerConstants
 local Constants = ns.Constants
 
+local L = ns.L
+
 --- @class ExpansionLandingPageMixin
 local ExpansionLandingPageMixin = {
     RequieredAddon = "Blizzard_GarrisonUI"
@@ -51,6 +53,54 @@ function ExpansionLandingPageMixin.GarrisonLandingPageShown(pageID)
     end
 end
 
+local function OnMouseEnter(self)
+    local expansionID = self:GetUserData("ExpansionID")
+    --- @type GarrionData
+    local data = Utils:GarrisonDataByID(expansionID)
+
+    local currentTime = time()
+    local numMissionsAvailable = 0
+    local numMissionsInProgress = 0
+    local numMissionsCompleted = 0
+    for _, followerType in ipairs(data.followerTypes) do
+        local availableMissionsData = C_Garrison.GetAvailableMissions(followerType) or {}
+        for _, missionData in ipairs(availableMissionsData) do
+            if(not missionData.inProgress and missionData.canStart) then
+                numMissionsAvailable = numMissionsAvailable + 1
+            end
+        end
+
+        for _, missionData in ipairs(C_Garrison.GetInProgressMissions(followerType) or {}) do
+            if(missionData.missionEndTime > currentTime) then
+                numMissionsInProgress = numMissionsInProgress + 1
+            end
+        end
+
+        numMissionsCompleted = numMissionsCompleted + #C_Garrison.GetCompleteMissions(followerType)
+    end
+
+    GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT", 0, -75)
+    GameTooltip:SetText(Utils:ColorStr(data.displayName, data.backbroundColor))
+
+    if(numMissionsAvailable > 0) then
+        GameTooltip:AddLine(L["Available missions: %s"]:format(Utils:ColorStr(tostring(numMissionsAvailable), 'FFAE5700')))
+    else
+        GameTooltip:AddLine(L["No available missions."])
+    end
+
+    if(numMissionsInProgress > 0) then
+        GameTooltip:AddLine(L["In progress missions: %s"]:format(Utils:ColorStr(tostring(numMissionsInProgress), 'FFAE5700')))
+    else
+        GameTooltip:AddLine(L["No missions in progress"])
+    end
+
+    if(numMissionsCompleted > 0) then
+        GameTooltip:AddLine(L["Completed missions: %s"]:format(Utils:ColorStr(tostring(numMissionsCompleted), 'FFAE5700')))
+    end
+
+    GameTooltip:Show()
+end
+
 --- Call back to be called when the ExpansionLandingPage is shown
 function ExpansionLandingPageMixin:OnShow()
     ExpansionLandingPage:SetScale(0.95)
@@ -77,6 +127,10 @@ function ExpansionLandingPageMixin:OnShow()
             end
             currentTab:SetUserData("ExpansionID", id)
             currentTab:SetCallback("OnValueChanged", OnExpanionTabValueChanged)
+            currentTab:SetCallback("OnEnter", OnMouseEnter)
+            currentTab:SetCallback("OnLeave", function()
+                GameTooltip:Hide()
+            end)
             group:AddChild(currentTab)
         end
     end

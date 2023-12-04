@@ -29,7 +29,8 @@
         "RED_FONT_COLOR_CODE",
         "MP",
         "NORMAL_FONT_COLOR_CODE",
-        "InterfaceOptionsFrame_OpenToCategory"
+        "InterfaceOptionsFrame_OpenToCategory",
+        "GREEN_FONT_COLOR"
     ],
     "Lua.diagnostics.disable": [
     ]

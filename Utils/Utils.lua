@@ -48,12 +48,12 @@ function Utils:GetIconStr(iconPath, width, height)
 end
 
 --- Colors the given string with the given color
----@param color string|table{r:number, g:number, b:number, a:number}
+---@param color string|table{r:number, g:number, b:number, a?:number}|table{[1]:number, [2]:number, [3]:number, [4]?:number}
 ---@param text string
 ---@return string
 function Utils:ColorStr(text, color)
     if(type(color) == "table") then
-        color = string.format("%02x%02x%02x%02x", color.a * 255, color.r * 255, color.g * 255, color.b * 255)
+        color = string.format("%02x%02x%02x%02x", (color.a or color[4] or 1) * 255, (color.r or color[1]) * 255, (color.g or color[2]) * 255, (color.b or color[3]) * 255)
     end
     return string.format("|c%s%s|r", color, text)
 end
