@@ -83,7 +83,7 @@ end
 Config.InternalVersion = GetVersionNumber("@project-version@")
 --@end-non-debug@]===]
 --@debug@
-Config.InternalVersion = GetVersionNumber("v0.1.1")
+Config.InternalVersion = GetVersionNumber("v0.1.3")
 --@end-debug@
 
 
