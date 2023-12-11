@@ -1,6 +1,8 @@
 name: Liting and Artifact generation
 
-on: 'push'
+on:
+  push:
+  pull_request:
 
 jobs:
     Lint-Project:
