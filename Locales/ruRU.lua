@@ -1,5 +1,25 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("CompanionsTracker", "ruRU", false, true)
-
+--Translator: ZamestoTV
 if L then
---@localization(locale="ruRU", format="lua_additive_table", same-key-is-true=true, handle-unlocalized="comment",  escape-non-ascii=true, handle-subnamespaces="concat")@
+L["Available missions: %s"] = "Доступные миссии: %s"
+L["Battle for Azeroth"] = "Battle for Azeroth"
+L["Completed missions: %s"] = "Завершенные миссии: %s"
+L["Debug Settings"] = "Настройки отладки"
+L["Defines what expansion page will open when left clicking the minimap icon"] = "Определяет, какая страница дополнения откроется при щелчке ЛКМ по значку мини-карты"
+L["Draenor"] = "Draenor"
+L["Enables/Disables the addon printing debug messages to the chat"] = "Включает/отключает печать отладочных сообщений аддона в чате"
+L["General Settings"] = "Общие настройки"
+L["Hide minimap icon"] = "Скрыть значок на мини-карте"
+L["Hides/Shows the minimap icon"] = "Скрывает/показывает значок на мини-карте"
+L["In progress missions: %s"] = "Выполняемые миссии: %s"
+L["Left Click"] = "ЛКМ"
+L["Left Click on minimap to open expansion"] = "Щелкните ЛКМ на мини-карте, чтобы открыть дополнение"
+L["Legion"] = "Legion"
+L["No available missions."] = "Доступных миссий нет."
+L["No missions in progress"] = "Миссии не выполняются"
+L["Open Options panel"] = "Откройте панель настроек"
+L["Opens the %s garrison landing page"] = "Открывает страницу заданий %s."
+L["Right Click"] = "ПКМ"
+L["Shadowlands"] = "Shadowlands"
+L["Show debug messages"] = "Показывать сообщения об отладке"
 end
