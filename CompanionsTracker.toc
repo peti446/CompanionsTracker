@@ -1,8 +1,10 @@
 ## Interface: 100200
 ## Title: Companions Tracker
+## Title-ruRU: Трекер компаньонов
 ## Author: Geloch (Sanguino - EU Horde)
 ## Version: @project-version@
 ## Notes: Allows you to track all followers/companions missions from all expansions, and get notifications when missions complete
+## Notes-ruRU: Позволяет отслеживать все миссии соратников/компаньонов из всех дополнений и получать уведомления о завершении миссий.
 ## LoadOnDemand: 0
 ## SavedVariables: CompanionsTrackerDB
 ## X-Curse-Project-ID: 944606
