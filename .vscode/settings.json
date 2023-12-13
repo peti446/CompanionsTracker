@@ -30,7 +30,26 @@
         "MP",
         "NORMAL_FONT_COLOR_CODE",
         "InterfaceOptionsFrame_OpenToCategory",
-        "GREEN_FONT_COLOR"
+        "GREEN_FONT_COLOR",
+        "CLOSE",
+        "SlashCmdList",
+        "HybridScrollFrame_Update",
+        "SearchBoxTemplate_OnTextChanged",
+        "HybridScrollFrame_CollapseButton",
+        "EventTraceTooltip",
+        "GameTooltip_AddHighlightLine",
+        "GameTooltip_AddColoredDoubleLine",
+        "HybridScrollFrame_CreateButtons",
+        "HIGHLIGHT_FONT_COLOR",
+        "HybridScrollFrame_GetOffset",
+        "UIParentLoadAddOn",
+        "DisplayTableInspectorWindow",
+        "APIDocumentation",
+        "HybridScrollFrame_ExpandButton",
+        "EncounterJournal",
+        "GameFontNormalLarge",
+        "GameFontNormalLarge2",
+        "Add"
     ],
     "Lua.diagnostics.disable": [
     ]

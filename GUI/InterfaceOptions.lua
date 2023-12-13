@@ -53,7 +53,7 @@ local myOptionsTable = {
                     values = function()
                         local values = {}
                         for _, data in ipairs(ns.Constants.GarrionData) do
-                            values[data.garrisonID] = Utils:GetIconStr(data.imagePath, 24, 24) .. " " .. data.displayName
+                            values[data.garrisonID] = Utils:GetIconStr(data.iconPath, 24, 24) .. " " .. data.displayName
                         end
 
                         return values

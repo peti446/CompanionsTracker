@@ -21,8 +21,9 @@ Utils/ConstsHelpers.lua
 GUI/InterfaceOptions.lua
 GUI/MinimapIcon.lua
 GUI/Widgets/ArchaeologyCheckButton.lua
+GUI/Widgets/CharacterOverviewButton.lua
+GUI/Widgets/ExpansionsOverviewFrame.lua
 GUI/Blizzard/ExpansionLandingPageMixin.lua
-
 
 GlobalEvents.lua
 Init.lua
