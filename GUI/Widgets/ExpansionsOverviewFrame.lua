@@ -1,11 +1,29 @@
 local ns = select(2, ...)
 --- @type AceGUI-3.0
 local AceGUI = ns.AceGUI
+local Utils = ns.Utils
 local Type, Version = "ExpansionOverviewFrame", 1
 if not AceGUI or (AceGUI:GetWidgetCount(Type) or 0) >= Version then return end
 
 --- @class ExpansionsOverviewFrame : AceGUIWidget
 local WidgetMethods = {}
+
+
+--- Gets the value from tab data
+---@param self table
+---@param value any
+---@return {buttonIcon: string, buttonColor?: table, bgTexture: string, value: any, text: string, buttonRef: frame}|nil The tab data table or nill if nothing was found
+local function GetTabDataFromValue(self, value)
+    for _, tabData in pairs(self.tabsData) do
+        if tabData.value == value then
+            return tabData
+        end
+    end
+
+    return nil
+end
+
+
 function WidgetMethods.OnAcquire(self)
     self.frame:SetParent(UIParent)
     self.frame:SetFrameStrata("MEDIUM")
@@ -48,38 +66,46 @@ local function OnCheckButtonValueChanged(button, _event, checked)
 
     -- Update the content of the content and background
     -- Find in the data table the one with the value
-    local bgTexture
-    local title
-    local portrait
-    for _, tabData in pairs(self.tabsData) do
-        if tabData.value == value then
-            bgTexture = tabData.bgTexture
-            title = tabData.text
-            portrait = tabData.buttonIcon
-            break
-        end
+    local tabData = GetTabDataFromValue(self, value)
+    if tabData then
+        self.expanionBackground:SetAtlas(tabData.bgTexture, true, "TRILINEAR")
+        self.expansionTitle:SetText(tabData.text)
+        self:SetPortraitTexture(tabData.buttonIcon)
+        self:SetNavBarPath(tabData.value)
+    end
+    self.frame.obj:Fire("OnTabChanged", value)
+    self.selectedTab = value
+end
+
+function WidgetMethods.SetSelectedTab(self, tabValue)
+    local tabData = GetTabDataFromValue(self, tabValue)
+    if tabData == nil then
+        Utils:DebugPrint("Failed to find tab data for value: " .. tabValue)
+        return
     end
 
-    self.expanionBackground:SetAtlas(bgTexture, true, "TRILINEAR")
-    self.expansionTitle:SetText(title)
-    self:SetPortraitTexture(portrait)
-    self.frame.obj:Fire("OnTabChanged", value)
+    OnCheckButtonValueChanged(tabData.buttonRef, nil, true)
 end
 
 --- Sets the tab data for the widget
 --- @param tabsData {buttonIcon: string, buttonColor?: table, bgTexture: string, value: any, text: string}[]
 function WidgetMethods.SetTabsInfo(self, tabsData)
-    self.tabsData = tabsData
     self.buttonsFrameGroup:ReleaseChildren()
+    if(self.tabsData) then
+        for _, data in pairs(self.tabsData) do
+            data.buttonRef = nil
+        end
+    end
+    self.tabsData = tabsData
 
     for _, data in pairs(tabsData) do
-        self:AddTab(data)
+        data.buttonRef = self:AddTab(data)
     end
 
-    if(self.buttonsFrameGroup.children ~= nil and #self.buttonsFrameGroup.children >= 1) then
-        OnCheckButtonValueChanged(self.buttonsFrameGroup.children[1], nil, true)
+    if(#self.tabsData >= 1) then
+        self:SetSelectedTab(self.tabsData[1].value)
     end
-
+    self.buttonsFrameGroup.frame:SetScale(1.35)
     RunNextFrame(function()
         self.buttonsFrameGroup:DoLayout()
     end)
@@ -87,6 +113,7 @@ end
 
 --- Creates a tab for the widget
 --- @param data {buttonIcon: string, buttonColor?: table, bgTexture: string, value: any, text: string}
+--- @return ArchaeologyCheckButton the tab button created
 function WidgetMethods.AddTab(self, data)
     --- @class ArchaeologyCheckButton
     local currentTab = AceGUI:Create("ArchaeologyCheckButton")
@@ -98,7 +125,7 @@ function WidgetMethods.AddTab(self, data)
     currentTab:SetUserData("self", self)
     currentTab:SetCallback("OnValueChanged", OnCheckButtonValueChanged)
     self.buttonsFrameGroup:AddChild(currentTab)
-    self.buttonsFrameGroup.frame:SetScale(1.35)
+    return currentTab
 end
 
 function WidgetMethods.SetStatusTable(self, status)
@@ -117,6 +144,57 @@ function WidgetMethods.ApplyStatus(self)
     else
         frame:SetPoint("CENTER")
     end
+end
+
+--- Set the nav bar path, the path is / separated and needs to be the value of the tabs data, if it does not exists it will fail
+---@param self ExpansionsOverviewFrame
+function WidgetMethods.SetNavBarPath(self, ...)
+    local args = SafePack(...)
+
+    if(#args == 0) then
+        Utils:DebugPrint("Path is null")
+        return
+    end
+
+    if(self.navBar.navList) then
+        NavBar_Reset(self.navBar)
+        self.navBar.navList = nil
+    end
+
+
+    -- TODO: NEed to switch form only value to data text and type to allow for custom path with data ^^
+    local homeButtonTabData = GetTabDataFromValue(self, args[1]);
+    if not homeButtonTabData then
+        Utils:DebugPrint("Failed to find tab data for home path: " .. args[1])
+        return
+    end
+
+    local homeData = {
+		name = homeButtonTabData.text,
+		OnClick = function()
+            self:SetSelectedTab(homeButtonTabData.value)
+		end,
+	}
+
+	NavBar_Initialize(self.navBar, "NavButtonTemplate", homeData, self.navBar.home, self.navBar.overflow)
+    args[1] = nil
+    args['n'] = nil
+    for _, section in pairs(args) do
+        local tableData = GetTabDataFromValue(self, section)
+        if not tableData then
+            Utils:DebugPrint("Failed to find tab data for path: " .. section)
+            return
+        end
+
+        local data = {
+            name = tableData.text,
+            id = section,
+            OnClick = function()
+            end,
+        }
+        NavBar_AddButton(self.navBar, data)
+    end
+
 end
 
 -- Events!
@@ -245,7 +323,8 @@ local function Constructor()
     })
     scrollFrame:ClearAllPoints()
     scrollFrame:SetPoint("TOPLEFT", characterListFrame, 14, -50)
-    scrollFrame:SetPoint("BOTTOMRIGHT", characterListFrame)
+    scrollFrame:SetPoint("BOTTOMRIGHT", characterListFrame, 0, 5)
+    scrollFrame.scrollbar:SetPoint("BOTTOMLEFT", characterListFrame, "BOTTOMRIGHT", -4, 16)
 
     for i = 1, 69 do
         local f = AceGUI:Create("CharacterOverviewFrame")
@@ -274,6 +353,7 @@ local function Constructor()
         expansionTitle = expansionTitle,
         scrollFrame = scrollFrame,
         content = scrollFrame.content,
+        selectedTab = nil,
         buttonsFrameGroup = buttonsFrameGroup,
 		type = Type
     }
