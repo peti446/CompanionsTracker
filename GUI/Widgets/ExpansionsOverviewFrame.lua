@@ -326,14 +326,6 @@ local function Constructor()
     scrollFrame:SetPoint("BOTTOMRIGHT", characterListFrame, 0, 5)
     scrollFrame.scrollbar:SetPoint("BOTTOMLEFT", characterListFrame, "BOTTOMRIGHT", -4, 16)
 
-    for i = 1, 69 do
-        local f = AceGUI:Create("CharacterOverviewFrame")
-        f:SetParent(scrollFrame)
-        f:SetTitle("Sinae")
-        f:SetLineText(1, "Misions in progress: X")
-        scrollFrame:AddChild(f)
-    end
-
     local expansionTitle =  characterListFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge2")
     expansionTitle:SetParent(characterListFrame)
     expansionTitle:ClearAllPoints()
