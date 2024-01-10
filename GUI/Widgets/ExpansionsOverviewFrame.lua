@@ -313,7 +313,7 @@ local function Constructor()
     expanionBackground:SetTexture("Interface\\EncounterJournal\\UI-EJ-Cataclysm")
     expanionBackground:SetAllPoints(characterListFrame, true)
 
-    --- @type AceGUIScrollFrame
+    --- @class AceGUIScrollFrame : AceGUIWidget
     local scrollFrame = AceGUI:Create("ScrollFrame")
     scrollFrame.frame:SetParent(characterListFrame)
     scrollFrame:SetLayout("Table")

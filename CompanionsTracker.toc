@@ -18,12 +18,15 @@ Utils/Config.lua
 Utils/GarrisonWindow.lua
 Utils/ConstsHelpers.lua
 
+DataCollectors/GarrionDataCollector.lua
+
 GUI/InterfaceOptions.lua
 GUI/MinimapIcon.lua
 GUI/Widgets/ArchaeologyCheckButton.lua
 GUI/Widgets/CharacterOverviewButton.lua
 GUI/Widgets/ExpansionsOverviewFrame.lua
 GUI/Blizzard/ExpansionLandingPageMixin.lua
+GUI/OverviewFrame.lua
 
 GlobalEvents.lua
 Init.lua

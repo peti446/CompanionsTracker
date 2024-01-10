@@ -57,30 +57,7 @@ end
 
 function DataBorker:OnClick(button, down)
     if(button == "LeftButton") then
-        --Utils:OpenGarrisonWindow(Config.db.profile.minimap.quickAccessExpansionID)
-        local f = ns.AceGUI:Create("ExpansionOverviewFrame")
-        f:SetTitle(L["Companions Tracker"])
-        f:SetPortraitTexture("Interface\\AddOns\\CompanionsTracker\\Media\\Icons\\shadowlands_logo")
-        local tabData = {}
-        for _, data in ipairs(ns.Constants.GarrionData) do
-            local id = data.garrisonID
-            if(C_Garrison.GetGarrisonInfo(id) ~= nil) then
-                table.insert(tabData, {
-                    buttonIcon = data.iconPath,
-                    bgTexture = data.frameBackground,
-                    value = id,
-                    text = data.displayName,
-                    buttonColor = data.buttonBackgroundColor
-                })
-            end
-        end
-
-        f:SetTabsInfo(tabData)
-        f:Show()
-        f:SetCallback("OnHide", function()
-            f:Release()
-        end)
-
+        CompanionsTracker:ShowOverviewFrame(Config.db.profile.minimap.quickAccessExpansionID)
     elseif(button == "RightButton") then
         CompanionsTracker:OpenOptionsGUI()
     end

@@ -55,7 +55,11 @@
         "EJ_ContentTab_Select",
         "MonthlyActivitiesFrame_OpenFrame",
         "NavBar_Reset",
-        "NavBar_AddButton"
+        "NavBar_AddButton",
+        "GARRISON_FOLLOWER_ADDED",
+        "GARRISON_FOLLOWER_REMOVED",
+        "GARRISON_MISSION_STARTED",
+        "GARRISON_UPDATE"
     ],
     "Lua.diagnostics.disable": [
     ]

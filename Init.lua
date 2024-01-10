@@ -23,8 +23,20 @@ function CompanionsTracker:OnEnable()
     Utils:DebugPrint("Addon Enabling")
     self:InitMinimapIcon()
     self.Mixins.ExpansionLandingPageMixin:Embed()
+
+    local module = self:GetModule("GarrisonDataCollector") --[[@as GarrisonDataCollectorModule]]
+    module:Enable()
+    for _, data in ipairs(ns.Constants.GarrionData) do
+        module:RegisterExpansion({
+            garrisonType = data.garrisonID,
+            followersID = data.followerTypes
+        })
+    end
 end
 
 function CompanionsTracker:OnDisable()
     Utils:DebugPrint("Addon disabling")
+
+
+    self:DisableModule("GarrisonDataCollector")
 end

@@ -58,6 +58,19 @@ function Utils:ColorStr(text, color)
     return string.format("|c%s%s|r", color, text)
 end
 
+--- Checks if an element is in an array like table
+---@param table table
+---@param element any
+---@return boolean
+function Utils:TableHasValue(table, element)
+    for _, value in pairs(table) do
+        if value == element then
+            return true
+        end
+    end
+    return false
+end
+
 --- Prints any text to the chat, only if debug is enabled
 --- @vararg any
 function Utils:DebugPrint(...)

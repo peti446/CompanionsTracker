@@ -1,3 +1,0 @@
-interface/talentframe/specializationclassthumbnails
-interface/store/expansiontrialpopupbfa
-interface/garrison/garrisontoast
