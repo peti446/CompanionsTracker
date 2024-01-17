@@ -117,7 +117,7 @@ function ExpansionLandingPageMixin:OnShow()
 
     for _, data in ipairs(Constants.GarrionData) do
         local id = data.garrisonID
-        if(C_Garrison.GetGarrisonInfo(id) ~= nil) then
+        if(C_Garrison.HasGarrison(id)) then
             --- @class ArchaeologyCheckButton
             --- @diagnostic disable-next-line: param-type-mismatch
             local currentTab = AceGUI:Create("ArchaeologyCheckButton")

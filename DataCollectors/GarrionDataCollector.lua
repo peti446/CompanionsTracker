@@ -36,24 +36,41 @@ function GarrisonDataCollector:RegisterExpansion(data)
         return
     end
 
+    if(Utils:TableHasValue(self.garrisonTypesTracked, data.garrisonType)) then
+        Utils:DebugPrint("Garrison type already registered")
+        return
+    end
+
     -- Data storage
     table.insert(self.garrisonTypesTracked, data.garrisonType)
+    self.garrisonsData[data.garrisonType] = self.garrisonsData[data.garrisonType] or {}
     for _, followerID in ipairs(data.followersID) do
         table.insert(self.garrisonFollowersTracked, followerID)
         self.followerTypeToGarrisonType[followerID] = data.garrisonType
     end
 
     C_Garrison.RequestLandingPageShipmentInfo()
+
+    Utils:DebugPrint(("Registered expansion with id %d"):format(data.garrisonType))
+    Utils:DebugPrint("Followers registered:")
+    Utils:DebugPrintTable(data.followersID)
 end
 
+function GarrisonDataCollector:GetData()
+    return self.garrisonsData
+end
 
 --- @private
 function GarrisonDataCollector:GARRISON_MISSION_LIST_UPDATE(followerTypeArray)
     local currentTime = time()
-    for id, _amount in ipairs(followerTypeArray) do
+    local updatedData = false
+    for id, _amount in pairs(followerTypeArray) do
         if(not Utils:TableHasValue(self.garrisonFollowersTracked, id)) then
+            Utils:DebugPrint(("Missions type %d not tracked"):format(id))
             return
         end
+
+        Utils:DebugPrint(("Updating data for missions of type %d"):format(id))
 
         local missionsAvailable = C_Garrison.GetAvailableMissions(id)
         local missionsInProgress = {}
@@ -68,24 +85,43 @@ function GarrisonDataCollector:GARRISON_MISSION_LIST_UPDATE(followerTypeArray)
 
         local garrisonID = self.followerTypeToGarrisonType[id]
         self.garrisonsData[garrisonID] = self.garrisonsData[garrisonID] or {}
-        self.garrisonsData[garrisonID][id] = self.garrisonsData[garrisonID][id] or {}
-        self.garrisonsData[garrisonID][id].missionsAvailable = missionsAvailable
-        self.garrisonsData[garrisonID][id].missionsInProgress = missionsInProgress
-        self.garrisonsData[garrisonID][id].missionsCompleted = missionsCompleted
+        self.garrisonsData[garrisonID].missionsAvailable = self.garrisonsData[garrisonID].missionsAvailable or {}
+        self.garrisonsData[garrisonID].missionsInProgress = self.garrisonsData[garrisonID].missionsInProgress or {}
+        self.garrisonsData[garrisonID].missionsCompleted = self.garrisonsData[garrisonID].missionsCompleted or {}
+        self.garrisonsData[garrisonID].missionsAvailable[id] = missionsAvailable
+        self.garrisonsData[garrisonID].missionsInProgress[id] = missionsInProgress
+        self.garrisonsData[garrisonID].missionsCompleted[id] = missionsCompleted
+
+        updatedData = true;
+    end
+
+    if(updatedData) then
+        self:SendMessage(ns.CompanionsTracker.Events.GarrionDataUpdated, self.garrisonsData)
     end
 end
 
 --- @private
 function GarrisonDataCollector:GARRISON_FOLLOWER_LIST_UPDATE(followerTypeArray)
-    for id, _amount in ipairs(followerTypeArray) do
+    local updatedData = false
+    for id, _amount in pairs(followerTypeArray) do
         if(not Utils:TableHasValue(self.garrisonFollowersTracked, id)) then
+            Utils:DebugPrint(("Followers type %d not tracked"):format(id))
             return
         end
+
+        Utils:DebugPrint(("Updating data for followers of type %d"):format(id))
+
         local followers = C_Garrison.GetFollowers(id)
         local garrisonID = self.followerTypeToGarrisonType[id]
         self.garrisonsData[garrisonID] = self.garrisonsData[garrisonID] or {}
-        self.garrisonsData[garrisonID][id] = self.garrisonsData[garrisonID][id] or {}
-        self.garrisonsData[garrisonID][id].followers = followers
+        self.garrisonsData[garrisonID].followers = self.garrisonsData[garrisonID].followers or {}
+        self.garrisonsData[garrisonID].followers[id] = followers
+
+        updatedData = true;
+    end
+
+    if(updatedData) then
+        self:SendMessage(ns.CompanionsTracker.Events.GarrionDataUpdated, self.garrisonsData)
     end
 end
 
@@ -110,7 +146,7 @@ function GarrisonDataCollector:UPDATE_SHIPMENTS_DATA()
                 local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(buildingID);
                 if ( name and shipmentCapacity > 0 ) then
                     garrisonData.buildingsShipment = garrisonData.buildingsShipment or {}
-                    garrisonData.buildingsShipment[buildingID] = C_Garrison.GetLandingPageShipmentInfo(buildingID)
+                    garrisonData.buildingsShipment[buildingID] = {C_Garrison.GetLandingPageShipmentInfo(buildingID)}
                 end
             end
         end
@@ -119,7 +155,7 @@ function GarrisonDataCollector:UPDATE_SHIPMENTS_DATA()
             local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, _, _, _, _, followerID = C_Garrison.GetLandingPageShipmentInfoByContainerID(followerShipmentID);
             if ( name and shipmentCapacity > 0) then
                 garrisonData.followersShipments = garrisonData.followersShipments or {}
-                garrisonData.followersShipments[followerShipmentID] = C_Garrison.GetLandingPageShipmentInfoByContainerID(followerShipmentID)
+                garrisonData.followersShipments[followerShipmentID] =  {C_Garrison.GetLandingPageShipmentInfoByContainerID(followerShipmentID)}
             end
         end
 
@@ -127,7 +163,7 @@ function GarrisonDataCollector:UPDATE_SHIPMENTS_DATA()
             local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString = C_Garrison.GetLandingPageShipmentInfoByContainerID(loseShipmentID);
             if ( name and shipmentCapacity > 0 ) then
                 garrisonData.looseShipments = garrisonData.looseShipments or {}
-                garrisonData.looseShipments[loseShipmentID] = C_Garrison.GetLandingPageShipmentInfoByContainerID(loseShipmentID)
+                garrisonData.looseShipments[loseShipmentID] =  {C_Garrison.GetLandingPageShipmentInfoByContainerID(loseShipmentID)}
             end
         end
 
@@ -136,11 +172,19 @@ function GarrisonDataCollector:UPDATE_SHIPMENTS_DATA()
                 local treeInfo = C_Garrison.GetTalentTreeInfo(treeID);
                 for _, talent in ipairs(treeInfo.talents) do
                     if talent.isBeingResearched or talent.id == completeTalentID then
+                        if(talent.startTime + talent.researchDuration > GetTime()) then
+                            garrisonData.talentBeingResearched = garrisonData.talentBeingResearched or {}
+                            garrisonData.talentBeingResearched[treeID] = garrisonData.talentBeingResearched[treeID] or {}
+                            garrisonData.talentBeingResearched[treeID][talent.id] = talent
+                        end
                     end
                 end
             end
         end
+
     end
+
+    self:SendMessage(ns.CompanionsTracker.Events.GarrionDataUpdated, self.garrisonsData)
 end
 
 

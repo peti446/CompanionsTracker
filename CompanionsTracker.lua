@@ -29,6 +29,12 @@ _G.CompanionsTracker = ns
 CompanionsTracker.Mixins = {}
 
 
+-- Events
+CompanionsTracker.Events = {
+    --- payload: data table<[string, any]>
+    GarrionDataUpdated = "CompanionsTracker_GarrionDataUpdated",
+}
+
 
 -- Constants
 

@@ -23,6 +23,10 @@ local function GetTabDataFromValue(self, value)
     return nil
 end
 
+function WidgetMethods.OnRelease(self)
+    self:SetTabsInfo({})
+    self.scrollFrame:ReleaseChildren()
+end
 
 function WidgetMethods.OnAcquire(self)
     self.frame:SetParent(UIParent)
@@ -37,12 +41,10 @@ end
 
 function WidgetMethods.Show(self)
     self.frame:Show()
-    self.buttonsFrameGroup.frame:Show()
 end
 
 function WidgetMethods.Hide(self)
     self.frame:Hide()
-    self.buttonsFrameGroup.frame:Hide()
 end
 
 function WidgetMethods.SetTitle(self, title)
@@ -316,11 +318,6 @@ local function Constructor()
     --- @class AceGUIScrollFrame : AceGUIWidget
     local scrollFrame = AceGUI:Create("ScrollFrame")
     scrollFrame.frame:SetParent(characterListFrame)
-    scrollFrame:SetLayout("Table")
-    scrollFrame:SetUserData("table", {
-        space = 15,
-        columns = {0,0,0,0}
-    })
     scrollFrame:ClearAllPoints()
     scrollFrame:SetPoint("TOPLEFT", characterListFrame, 14, -50)
     scrollFrame:SetPoint("BOTTOMRIGHT", characterListFrame, 0, 5)
@@ -344,10 +341,13 @@ local function Constructor()
         expanionBackground = expanionBackground,
         expansionTitle = expansionTitle,
         scrollFrame = scrollFrame,
-        content = scrollFrame.content,
+        -- We are just passing the content in, technically this will overwrite the object fromt he scrollfrae to self
+        -- therfore no layout is done internally nor any release children, as children will live in this widget, its a bit wired
+        -- might need to find a better way to do this
+        content =  scrollFrame.content,
         selectedTab = nil,
         buttonsFrameGroup = buttonsFrameGroup,
-		type = Type
+		type = Type,
     }
 
 	for method, func in pairs(WidgetMethods) do

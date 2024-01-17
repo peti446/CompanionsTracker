@@ -26,11 +26,14 @@ function CompanionsTracker:OnEnable()
 
     local module = self:GetModule("GarrisonDataCollector") --[[@as GarrisonDataCollectorModule]]
     module:Enable()
+    self:RegisterMessage(self.Events.GarrionDataUpdated)
     for _, data in ipairs(ns.Constants.GarrionData) do
-        module:RegisterExpansion({
-            garrisonType = data.garrisonID,
-            followersID = data.followerTypes
-        })
+        if(C_Garrison.HasGarrison(data.garrisonID)) then
+            module:RegisterExpansion({
+                garrisonType = data.garrisonID,
+                followersID = data.followerTypes
+            })
+        end
     end
 end
 

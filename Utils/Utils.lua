@@ -71,17 +71,29 @@ function Utils:TableHasValue(table, element)
     return false
 end
 
+
+--- Concatonates two tables, t1 is overwritten by t2
+---@param t1 table
+---@param t2 table
+---@return table
+function Utils:TableConcatStr(t1, t2)
+    for k, v in pairs(t2) do
+        t1[k] = v
+    end
+    return t1
+end
+
 --- Prints any text to the chat, only if debug is enabled
 --- @vararg any
 function Utils:DebugPrint(...)
     if(type(ns.Config.db) ~= "table" or ns.Config.db.profile.debug) then
-        self:Print(" " .. "|cFFFF0000(DEBUG)|r" .. tostringall(... or "nil"))
+        self:Print(" " .. "|cFFFF0000(DEBUG)|r " .. tostringall(... or "nil"))
     end
 end
 
 --- Prints a table only if debug is enabled
 ---@param tbl table
----@param indent number
+---@param indent? number
 function Utils:DebugPrintTable(tbl, indent)
     if(type(ns.Config.db) == "table" and not ns.Config.db.profile.debug) then
         return
@@ -116,13 +128,13 @@ end
 --- @vararg any
 function Utils:Print(...)
 ---@diagnostic disable-next-line: undefined-field
-    local msg = string.join(" ","|cFF029CFC["..AddonName.."]|r", tostringall(... or "nil"));
+    local msg = string.join(" ","|cFF029CFC["..AddonName.."]|r ", tostringall(... or "nil"));
     DEFAULT_CHAT_FRAME:AddMessage(msg);
 end
 
 --- Prints a table into the chat
 --- @param tbl table
---- @param indent number
+--- @param indent? number
 function Utils:PrintTable(tbl, indent)
     if(tbl == nil) then
         self:Print("Table is null")

@@ -75,11 +75,13 @@ local function Constructor()
     frame:SetPushedTexture(depressed)
     frame:SetHighlightTexture(highlight)
 
+    --- @class CharacterOverviewButton
     local widget = {
         frame = frame,
         type = Type,
         title = title,
         subText = subText,
+        bg = bg,
         OnAcquire = function(self)
             self:ClearAllText()
         end,
@@ -90,6 +92,9 @@ local function Constructor()
             if(self.subText[line]) then
                 self.subText[line]:SetText(text)
             end
+        end,
+        ["SetBackgroundAtlas"] = function(self, atlas, useAtlasSize, filterMode, resetTexCoords)
+            self.bg:SetAtlas(atlas, useAtlasSize, filterMode, resetTexCoords)
         end,
         ["ClearAllText"] = function(self)
             self.title:SetText("")
