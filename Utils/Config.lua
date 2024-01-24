@@ -18,6 +18,7 @@ local Defaults =
     {
         ["Version"] = -1,
         ["debug"] = false,
+        ["showServerName"] = false,
         ["minimap"] =
         {
             ["hide"] = false,

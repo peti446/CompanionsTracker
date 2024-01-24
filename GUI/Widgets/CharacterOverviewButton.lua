@@ -49,6 +49,7 @@ local function Constructor()
     for i = 1, 3 do
         local text = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         text:SetSize(150, 0)
+        text:SetFont("GameFontNormal", 11, "OUTLINE")
         text:ClearAllPoints()
         text:SetPoint("TOP", anchor, "BOTTOM", 0, -5)
         text:SetText("Test")
@@ -75,7 +76,7 @@ local function Constructor()
     frame:SetPushedTexture(depressed)
     frame:SetHighlightTexture(highlight)
 
-    --- @class CharacterOverviewButton
+    --- @class CharacterOverviewButton : AceGUIWidget
     local widget = {
         frame = frame,
         type = Type,

@@ -72,7 +72,14 @@ function GarrisonDataCollector:GARRISON_MISSION_LIST_UPDATE(followerTypeArray)
 
         Utils:DebugPrint(("Updating data for missions of type %d"):format(id))
 
-        local missionsAvailable = C_Garrison.GetAvailableMissions(id)
+        local missionsAvailable = {}
+        for _, mission in ipairs(C_Garrison.GetAvailableMissions(id) or {}) do
+            if(mission.offerEndTime) then
+                mission.offerEndTime = math.floor(mission.offerEndTime + currentTime)
+            end
+            table.insert(missionsAvailable, mission)
+        end
+
         local missionsInProgress = {}
         local missionsCompleted =  {}
         for _, mission in ipairs(C_Garrison.GetInProgressMissions(id) or {}) do

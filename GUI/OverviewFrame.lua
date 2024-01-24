@@ -9,7 +9,6 @@ local Config = ns.Config
 --- @type CompanionsTrackerUtils
 local Utils = ns.Utils
 
-
 --- @type AceGUI-3.0
 local AceGUI = ns.AceGUI
 
@@ -52,16 +51,13 @@ function CompanionsTracker:ShowOverviewFrame(selectedExpansionID)
     frame:SetPortraitTexture(expansionData.iconPath)
     local tabData = {}
     for _, data in ipairs(ns.Constants.GarrionData) do
-        local id = data.garrisonID
-        if(C_Garrison.HasGarrison(id)) then
-            table.insert(tabData, {
-                buttonIcon = data.iconPath,
-                bgTexture = data.frameBackground,
-                value = id,
-                text = data.displayName,
-                buttonColor = data.buttonBackgroundColor
-            })
-        end
+        table.insert(tabData, {
+            buttonIcon = data.iconPath,
+            bgTexture = data.frameBackground,
+            value = data.garrisonID,
+            text = data.displayName,
+            buttonColor = data.buttonBackgroundColor
+        })
     end
     frame:SetUserData("table", {
         space = 15,
@@ -70,57 +66,78 @@ function CompanionsTracker:ShowOverviewFrame(selectedExpansionID)
     frame:SetLayout("Table")
     frame:SetTabsInfo(tabData)
     frame:SetCallback("OnTabChanged", OverviewFrame.OnTabChanged)
+    frame:SetCallback("RenderSubPath", OverviewFrame.RenderSubPath)
     frame:Show()
     frame:SetSelectedTab(selectedExpansionID)
 end
 
 
---- Copy from https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_ClassTalentUI/Blizzard_ClassTalentSpecTab.lua
-local SPEC_TEXTURE_FORMAT = "spec-thumbnail-%s";
-local SPEC_FORMAT_STRINGS = {
-	[62] = "mage-arcane",
-	[63] = "mage-fire",
-	[64] = "mage-frost",
-	[65] = "paladin-holy",
-	[66] = "paladin-protection",
-	[70] = "paladin-retribution",
-	[71] = "warrior-arms",
-	[72] = "warrior-fury",
-	[73] = "warrior-protection",
-	[102] = "druid-balance",
-	[103] = "druid-feral",
-	[104] = "druid-guardian",
-	[105] = "druid-restoration",
-	[250] = "deathknight-blood",
-	[251] = "deathknight-frost",
-	[252] = "deathknight-unholy",
-	[253] = "hunter-beastmastery",
-	[254] = "hunter-marksmanship",
-	[255] = "hunter-survival",
-	[256] = "priest-discipline",
-	[257] = "priest-holy",
-	[258] = "priest-shadow",
-	[259] = "rogue-assassination",
-	[260] = "rogue-outlaw",
-	[261] = "rogue-subtlety",
-	[262] = "shaman-elemental",
-	[263] = "shaman-enhancement",
-	[264] = "shaman-restoration",
-	[265] = "warlock-affliction",
-	[266] = "warlock-demonology",
-	[267] = "warlock-destruction",
-	[268] = "monk-brewmaster",
-	[269] = "monk-windwalker",
-	[270] = "monk-mistweaver",
-	[577] = "demonhunter-havoc",
-	[581] = "demonhunter-vengeance",
-	[1467] = "evoker-devastation",
-	[1468] = "evoker-preservation",
-	[1473] = "evoker-augmentation",
-}
+function OverviewFrame.RenderSubPath(frame, _event, insertFrame, path)
+    insertFrame:ReleaseChildren()
 
+    -- Check the path
+    --local pathValues = Utils:Split(path.value or "", "/")
+    if(path == nil or  #path == 0) then
+        Utils:Print("Invalid path value on rendering sub path for overview frame, please contact the addon author. Value got is:" .. path)
+        return
+    end
 
-function OverviewFrame:OnTabChanged(_event, value)
+    -- Create the background group
+    --local charName = path[1].id;
+    local garrisonGroup = AceGUI:Create("GarrisonBackgroundGroup")
+    garrisonGroup:ClearAllPoints()
+    garrisonGroup:SetPoint("TOPLEFT", insertFrame.frame)
+    garrisonGroup:SetPoint("BOTTOMRIGHT", insertFrame.frame)
+    insertFrame:AddChild(garrisonGroup)
+
+end
+
+function OverviewFrame.OnCharacterbuttonClicked(button)
+    if(frame == nil) then
+        return
+    end
+
+    function GetPathData(garrisonID, name)
+        local subButtomData  = {
+            name = name,
+            id = name,
+            userData = {
+                garrisonID = garrisonID,
+                otherCharacters = {
+                }
+            },
+        }
+
+        -- Populate the other characters field
+        for otherName, data in pairs(Config.db.global.GarrisonsData) do
+            if(otherName ~= name) then
+                local garrisonData = data[garrisonID]
+                if(garrisonData ~= nil) then
+                    tinsert(subButtomData.userData.otherCharacters,
+                    {
+                        text = otherName,
+                        id = otherName,
+                        func = function (self, id, _navNar)
+                            frame:SetNavBarPath(unpack(GetPathData(self.owner.data.userData.garrisonID, id)))
+                        end
+                    })
+                end
+            end
+        end
+
+        -- If we have childs we add the list function to return them
+        if(#subButtomData.userData.otherCharacters > 0) then
+            subButtomData.listFunc = function(self)
+                return self.data.userData.otherCharacters
+            end
+        end
+        return {garrisonID, subButtomData }
+    end
+
+    frame:SetNavBarPath(unpack(GetPathData(button:GetUserData("garrisonID"), button:GetUserData("characterName"))))
+end
+
+function OverviewFrame.OnTabChanged(frame, _event, value)
     local allData = Config.db.global.GarrisonsData
     if(allData == nil or frame == nil) then
         return
@@ -128,10 +145,63 @@ function OverviewFrame:OnTabChanged(_event, value)
 
     frame:ReleaseChildren()
     for name, data in pairs(allData) do
-        --- @type CharacterOverviewButton
-        local button = AceGUI:Create("CharacterOverviewFrame")  --[[@as CharacterOverviewButton]]
-        button:SetTitle(name)
-        button:SetBackgroundAtlas(SPEC_TEXTURE_FORMAT:format(SPEC_FORMAT_STRINGS[data.specID]), true, "TRILINEAR")
-        frame:AddChild(button)
+        local garrisonData = data[value]
+        if(garrisonData ~= nil) then
+            local sanitizedName = name
+            if(not Config.db.profile.showServerName) then
+                sanitizedName = Utils:Split(name, "-")[1]
+            end
+            --- @type CharacterOverviewButton
+            local button = AceGUI:Create("CharacterOverviewFrame")  --[[@as CharacterOverviewButton]]
+            button:SetTitle(sanitizedName)
+            button:SetBackgroundAtlas(ns.TextureUtils:GetSpecThumbnailTexture(data.specID), true, "TRILINEAR")
+            button:SetUserData("garrisonID", value)
+            button:SetUserData("characterName", name)
+            button:SetCallback("OnClick", OverviewFrame.OnCharacterbuttonClicked)
+
+            local missionsCompleted = 0
+            local missionsInProgress = 0
+            local missionsAvailable = 0
+            local currentTime = time()
+            for _, followerTypeData in pairs(garrisonData.missionsAvailable or {}) do
+                for _, missionData in ipairs(followerTypeData) do
+                    if(missionData.offerEndTime and missionData.offerEndTime > currentTime) then
+                        missionsAvailable = missionsAvailable + 1
+                    end
+                end
+            end
+            for _, followerTypeData in pairs(garrisonData.missionsCompleted or {}) do
+                missionsCompleted = missionsCompleted + #followerTypeData
+            end
+            for _, followerTypeData in pairs(garrisonData.missionsInProgress or {}) do
+                for _, missionData in ipairs(followerTypeData) do
+                    if(missionData.missionEndTime > currentTime) then
+                        missionsInProgress = missionsInProgress + 1
+                    else
+                        missionsCompleted = missionsCompleted + 1
+                    end
+                end
+            end
+
+            local index = 1;
+            if(missionsInProgress > 0) then
+                button:SetLineText(index, L["In progress missions: %s"]:format(Utils:ColorStr(tostring(missionsInProgress), 'FFFF8400')))
+                index = 2;
+            end
+
+            if(missionsCompleted > 0) then
+                button:SetLineText(index, L["Completed missions: %s"]:format(Utils:ColorStr(tostring(missionsCompleted), 'FFFF8400')))
+                index = index + 1;
+            end
+
+            if(index == 1) then
+                button:SetLineText(1, L["No missions in progress or completed"])
+                if( missionsAvailable > 0) then
+                    button:SetLineText(2, L["Missions Available: %s"]:format(Utils:ColorStr(tostring(missionsAvailable), 'FFFF8400')))
+                end
+            end
+
+            frame:AddChild(button)
+        end
     end
 end

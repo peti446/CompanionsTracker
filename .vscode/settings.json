@@ -61,7 +61,12 @@
         "GARRISON_MISSION_STARTED",
         "GARRISON_UPDATE",
         "class",
-        "PlayerUtil"
+        "PlayerUtil",
+        "show",
+        "FONT_COLOR_CODE_CLOSE",
+        "GameFontDisableSmall",
+        "GameFontNormalSmall",
+        "NavBar_ToggleMenu"
     ],
     "Lua.diagnostics.disable": [
     ]

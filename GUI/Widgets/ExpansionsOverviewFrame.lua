@@ -31,7 +31,6 @@ end
 function WidgetMethods.OnAcquire(self)
     self.frame:SetParent(UIParent)
     self.frame:SetFrameStrata("MEDIUM")
-    self.scrollFrame.frame:Show()
 
     self:ApplyStatus()
     self:SetTitle()
@@ -77,6 +76,10 @@ local function OnCheckButtonValueChanged(button, _event, checked)
     end
     self.frame.obj:Fire("OnTabChanged", value)
     self.selectedTab = value
+
+    -- Show the content for tabs
+    self.characterListFrame:Show()
+    self.subFrameRenderFrame.frame:Hide()
 end
 
 function WidgetMethods.SetSelectedTab(self, tabValue)
@@ -159,12 +162,12 @@ function WidgetMethods.SetNavBarPath(self, ...)
     end
 
     if(self.navBar.navList) then
+        -- WTF???????? Not sure why we need to remove it but, if I leave it it causes a stack overflow as oldClick is executed when we reset it
+        self.navBar.homeButton:SetScript("OnClick", nil)
         NavBar_Reset(self.navBar)
         self.navBar.navList = nil
     end
 
-
-    -- TODO: NEed to switch form only value to data text and type to allow for custom path with data ^^
     local homeButtonTabData = GetTabDataFromValue(self, args[1]);
     if not homeButtonTabData then
         Utils:DebugPrint("Failed to find tab data for home path: " .. args[1])
@@ -173,30 +176,38 @@ function WidgetMethods.SetNavBarPath(self, ...)
 
     local homeData = {
 		name = homeButtonTabData.text,
-		OnClick = function()
+		OnClick = function(oldButton)
             self:SetSelectedTab(homeButtonTabData.value)
 		end,
+        listFunc = args.listFunc
 	}
 
 	NavBar_Initialize(self.navBar, "NavButtonTemplate", homeData, self.navBar.home, self.navBar.overflow)
+    local homeData = args[1]
+
+    -- Delete the ones we do not want to iterate over any longer
     args[1] = nil
     args['n'] = nil
-    for _, section in pairs(args) do
-        local tableData = GetTabDataFromValue(self, section)
-        if not tableData then
-            Utils:DebugPrint("Failed to find tab data for path: " .. section)
-            return
-        end
-
+    for i, section in pairs(args) do
         local data = {
-            name = tableData.text,
-            id = section,
-            OnClick = function()
+            name = section.name,
+            id = section.id,
+            userData = section.userData,
+            pathData = SafePack(homeData, unpack(args, 1, i)),
+            OnClick = function(oldButton)
+                self.frame.obj:Fire("RenderSubPath", self.subFrameRenderFrame, oldButton.data.pathData)
             end,
+            listFunc = section.listFunc
         }
         NavBar_AddButton(self.navBar, data)
     end
 
+
+    if(#args > 1) then
+        self.characterListFrame:Hide()
+        self.subFrameRenderFrame.frame:Show()
+        self.frame.obj:Fire("RenderSubPath", self.subFrameRenderFrame, args)
+    end
 end
 
 -- Events!
@@ -288,13 +299,14 @@ local function Constructor()
         rightBorder:SetPoint("BOTTOMRIGHT", borderRightCorner, "TOPRIGHT")
     end
 
+    -- TODO: Change for normal frame
     --- @class AceGUISimpleGroup : AceGUIWidget
     local buttonsFrameGroup = AceGUI:Create("SimpleGroup")
     buttonsFrameGroup.frame:SetParent(frame)
     buttonsFrameGroup:ClearAllPoints()
     buttonsFrameGroup:SetHeight(400)
     buttonsFrameGroup:SetWidth(100)
-    buttonsFrameGroup:SetPoint("TOPLEFT", frame, "TOPRIGHT", 0, -75)
+    buttonsFrameGroup:SetPoint("TOPLEFT", frame, "TOPRIGHT", -2, -75)
     buttonsFrameGroup:SetLayout("List")
     buttonsFrameGroup.frame:Show()
 
@@ -315,6 +327,8 @@ local function Constructor()
     expanionBackground:SetTexture("Interface\\EncounterJournal\\UI-EJ-Cataclysm")
     expanionBackground:SetAllPoints(characterListFrame, true)
 
+
+    -- TODO: Change for normal frame, and make add child to go directly here or to the subFrame during the render funtion calls
     --- @class AceGUIScrollFrame : AceGUIWidget
     local scrollFrame = AceGUI:Create("ScrollFrame")
     scrollFrame.frame:SetParent(characterListFrame)
@@ -331,6 +345,16 @@ local function Constructor()
     expansionTitle:SetJustifyV("BOTTOM")
     expansionTitle:SetJustifyH("CENTER")
 
+    --- @type AceGUISimpleGroup
+    local subFrameRenderFrame = AceGUI:Create("SimpleGroup") --[[@as AceGUISimpleGroup]]
+    subFrameRenderFrame.frame:SetParent(inset)
+    subFrameRenderFrame:ClearAllPoints()
+    subFrameRenderFrame:SetPoint("TOPLEFT", inset, 0, -2)
+    subFrameRenderFrame:SetPoint("BOTTOMRIGHT", inset, -3, 0)
+    subFrameRenderFrame:SetLayout("Fill")
+    subFrameRenderFrame.frame:Hide()
+
+
     --- @class ExpansionsOverviewFrame : AceGUIWidget
     --- @field status table|nil
     local widget = {
@@ -345,6 +369,8 @@ local function Constructor()
         -- therfore no layout is done internally nor any release children, as children will live in this widget, its a bit wired
         -- might need to find a better way to do this
         content =  scrollFrame.content,
+        subFrameRenderFrame  = subFrameRenderFrame,
+        characterListFrame = characterListFrame,
         selectedTab = nil,
         buttonsFrameGroup = buttonsFrameGroup,
 		type = Type,
