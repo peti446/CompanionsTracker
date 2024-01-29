@@ -66,7 +66,26 @@
         "FONT_COLOR_CODE_CLOSE",
         "GameFontDisableSmall",
         "GameFontNormalSmall",
-        "NavBar_ToggleMenu"
+        "NavBar_ToggleMenu",
+        "SetItemButtonQuality",
+        "GetColorForCurrencyReward",
+        "GarrisonLandingPageReportList_FormatXPNumbers",
+        "CurrencyContainerUtil",
+        "COPPER_PER_GOLD",
+        "GarrisonBonusAreaTooltip",
+        "GarrisonBonusArea_Set",
+        "GarrisonLandingPageReportMissionReward_OnEnter",
+        "GARRISON_BONUS_EFFECT_TIME_ACTIVE",
+        "GameTooltip_Hide",
+        "GARRISON_MISSION_TYPE_FONT_COLOR",
+        "GARRISON_LONG_MISSION_TIME",
+        "GARRISON_LONG_MISSION_TIME_FORMAT",
+        "FIRST_NUMBER_CAP",
+        "GarrisonPortrait_Set",
+        "GarrisonLandingPageReportList_InitButtonAvailable",
+        "GarrisonLandingPageReportMission_OnClick",
+        "GarrisonLandingPageReportList_InitButton",
+        "GarrisonLandingPageReportList_UpdateAvailable"
     ],
     "Lua.diagnostics.disable": [
     ]

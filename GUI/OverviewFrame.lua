@@ -71,6 +71,41 @@ function CompanionsTracker:ShowOverviewFrame(selectedExpansionID)
     frame:SetSelectedTab(selectedExpansionID)
 end
 
+local function RenderMissionsTab(self, _event, group)
+    -- Clean up first so that we do not have any pending data
+    self:ReleaseChildren()
+    self:SetLayout("Fill")
+
+    -- Create the scroll frame
+    local scrollFrame = AceGUI:Create("ScrollFrame")
+    scrollFrame:SetLayout("List")
+    scrollFrame:SetFullWidth(true)
+    scrollFrame:SetFullHeight(true)
+    self:AddChild(scrollFrame)
+
+    local charData = self:GetUserData("CharData")
+    local dataEntries = Utils:Split(group, ",")
+    for _, dataEntry in ipairs(dataEntries) do
+        local data = charData[dataEntry]
+        if(data ~= nil) then
+            for _, followerTypeData in pairs(data) do
+                for _, missionData in ipairs(followerTypeData) do
+                    ---@type BlizzardGarrisonLandingPageReportMissionTemplate
+                    local missionFrame = AceGUI:Create("BlizzardGarrisonLandingPageReportMissionTemplate") --[[@as BlizzardGarrisonLandingPageReportMissionTemplate]]
+
+                    -- Update the mission data as time goes by
+                    -- TODO: Move this to a timer
+                    if(missionData.missionEndTime < time()) then
+                        missionData.isComplete = true
+                    end
+                    missionFrame:SetMissionInfo(missionData)
+                    scrollFrame:AddChild(missionFrame)
+                end
+            end
+        end
+    end
+
+end
 
 function OverviewFrame.RenderSubPath(frame, _event, insertFrame, path)
     insertFrame:ReleaseChildren()
@@ -82,14 +117,33 @@ function OverviewFrame.RenderSubPath(frame, _event, insertFrame, path)
         return
     end
 
+    local charData = Config.db.global.GarrisonsData[path[2].id][path[2].userData.garrisonID]
+
     -- Create the background group
     --local charName = path[1].id;
     local garrisonGroup = AceGUI:Create("GarrisonBackgroundGroup")
-    garrisonGroup:ClearAllPoints()
-    garrisonGroup:SetPoint("TOPLEFT", insertFrame.frame)
-    garrisonGroup:SetPoint("BOTTOMRIGHT", insertFrame.frame)
+    garrisonGroup:SetLayout("Flow")
     insertFrame:AddChild(garrisonGroup)
 
+
+    local missionsTabGroup = AceGUI:Create("TabGroup")
+    missionsTabGroup:SetLayout("Flow")
+    missionsTabGroup:SetTabs({
+        {
+            text = L["Available"],
+            value = "missionsAvailable"
+        },
+        {
+            text = L["In progress"],
+            value = "missionsInProgress,missionsCompleted"
+        }
+    })
+    missionsTabGroup:SetCallback("OnGroupSelected", RenderMissionsTab)
+    missionsTabGroup:SetWidth(425)
+    missionsTabGroup:SetFullHeight(true)
+    missionsTabGroup:SetUserData("CharData", charData)
+    missionsTabGroup:SelectTab("missionsAvailable")
+    garrisonGroup:AddChild(missionsTabGroup)
 end
 
 function OverviewFrame.OnCharacterbuttonClicked(button)

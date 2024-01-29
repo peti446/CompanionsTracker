@@ -193,7 +193,7 @@ function WidgetMethods.SetNavBarPath(self, ...)
             name = section.name,
             id = section.id,
             userData = section.userData,
-            pathData = SafePack(homeData, unpack(args, 1, i)),
+            pathData = SafePack({ id=homeData }, unpack(args, 1, i)),
             OnClick = function(oldButton)
                 self.frame.obj:Fire("RenderSubPath", self.subFrameRenderFrame, oldButton.data.pathData)
             end,

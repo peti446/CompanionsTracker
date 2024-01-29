@@ -24,6 +24,7 @@ DataCollectors/GarrionDataCollector.lua
 
 GUI/InterfaceOptions.lua
 GUI/MinimapIcon.lua
+GUI/Widgets/BlizzardWidgets/GarrisonLandingPageReportMissionTemplate.lua
 GUI/Widgets/GarrisonBackgroundGroup.lua
 GUI/Widgets/ArchaeologyCheckButton.lua
 GUI/Widgets/CharacterOverviewButton.lua
