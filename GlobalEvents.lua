@@ -25,3 +25,18 @@ function CompanionsTracker:CompanionsTracker_GarrionDataUpdated(_event, data)
         classID = Utils:GetCurrentPlayerClass(),
     })
 end
+
+function CompanionsTracker:GARRISON_UPDATE(_event)
+    local module = self:GetModule("GarrisonDataCollector") --[[@as GarrisonDataCollectorModule]]
+    if(not module:IsEnabled()) then
+        module:Enable()
+    end
+    for _, data in ipairs(ns.Constants.GarrionData) do
+        if(C_Garrison.HasGarrison(data.garrisonID) and not module:IsExpansionRegistered(data.garrisonID)) then
+            module:RegisterExpansion({
+                garrisonType = data.garrisonID,
+                followersID = data.followerTypes
+            })
+        end
+    end
+end

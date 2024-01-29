@@ -28,8 +28,15 @@ function GarrisonDataCollector:OnDisable()
 end
 
 
+--- Checks if a garrison type is registered
+---@param garrisonType Enum.GarrisonType The garrison type to check
+---@return boolean true if the garrison type is registered
+function GarrisonDataCollector:IsExpansionRegistered(garrisonType)
+    return Utils:TableHasValue(self.garrisonTypesTracked, garrisonType)
+end
+
 --- Adds a new garrison type to be tracked
---- @param data {garrisonType:number, followersID: number[]} The expansion data to be tracked
+--- @param data {garrisonType: Enum.GarrisonType, followersID: Enum.GarrisonFollowerType[]} The expansion data to be tracked
 function GarrisonDataCollector:RegisterExpansion(data)
     if(type(data) ~= "table") then
         Utils:DebugPrint("Invalid data passed to RegisterExpansion")

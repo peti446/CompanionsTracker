@@ -15,6 +15,7 @@ function CompanionsTracker:OnInitialize()
 
     -- Register Global Events
     self:RegisterEvent("ADDON_LOADED")
+    self:RegisterEvent("GARRISON_UPDATE")
 
     Utils:DebugPrint("Addon Initializing")
 end
@@ -23,18 +24,7 @@ function CompanionsTracker:OnEnable()
     Utils:DebugPrint("Addon Enabling")
     self:InitMinimapIcon()
     self.Mixins.ExpansionLandingPageMixin:Embed()
-
-    local module = self:GetModule("GarrisonDataCollector") --[[@as GarrisonDataCollectorModule]]
-    module:Enable()
     self:RegisterMessage(self.Events.GarrionDataUpdated)
-    for _, data in ipairs(ns.Constants.GarrionData) do
-        if(C_Garrison.HasGarrison(data.garrisonID)) then
-            module:RegisterExpansion({
-                garrisonType = data.garrisonID,
-                followersID = data.followerTypes
-            })
-        end
-    end
 end
 
 function CompanionsTracker:OnDisable()
