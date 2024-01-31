@@ -63,7 +63,7 @@ end
 ---@param element any
 ---@return boolean
 function Utils:TableHasValue(table, element)
-    for _, value in pairs(table) do
+    for _, value in pairs(table or {}) do
         if value == element then
             return true
         end

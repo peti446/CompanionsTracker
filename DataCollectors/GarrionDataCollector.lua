@@ -3,6 +3,9 @@ local ns = select(2, ...)
 --- @type CompanionsTrackerUtils
 local Utils = ns.Utils
 
+--- @type CompanionsTrackersEnums
+local Enums = ns.Constants.Enums
+
 --- @class GarrisonDataCollectorModule : AceHook-3.0, AceEvent-3.0, AceBucket-3.0, AceModule
 local GarrisonDataCollector = ns.CompanionsTracker:NewModule("GarrisonDataCollector", "AceEvent-3.0", "AceHook-3.0", "AceBucket-3.0")
 
@@ -32,6 +35,10 @@ end
 ---@param garrisonType Enum.GarrisonType The garrison type to check
 ---@return boolean true if the garrison type is registered
 function GarrisonDataCollector:IsExpansionRegistered(garrisonType)
+    if(not self.garrisonTypesTracked) then
+        return false
+    end
+
     return Utils:TableHasValue(self.garrisonTypesTracked, garrisonType)
 end
 
@@ -149,35 +156,63 @@ function GarrisonDataCollector:UPDATE_SHIPMENTS_DATA()
         local completeTalentID = C_Garrison.GetCompleteTalent(garrisonType)
 
         self.garrisonsData[garrisonType] = self.garrisonsData[garrisonType] or {}
-        local garrisonData = self.garrisonsData[garrisonType]
-        wipe(garrisonData.buildingsShipment or {})
-        wipe(garrisonData.followersShipments or {})
-        wipe(garrisonData.looseShipments or {})
+        self.garrisonsData[garrisonType].shipmentsData = self.garrisonsData[garrisonType].shipmentsData or {}
+        wipe(self.garrisonsData[garrisonType].shipmentsData)
+        local shipmentsDataTable = self.garrisonsData[garrisonType].shipmentsData;
+
 
         for _, building in ipairs(buildings) do
             local buildingID = building.buildingID;
             if ( buildingID) then
-                local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, itemName, itemIcon, itemQuality, itemID = C_Garrison.GetLandingPageShipmentInfo(buildingID);
+                local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration = C_Garrison.GetLandingPageShipmentInfo(buildingID);
                 if ( name and shipmentCapacity > 0 ) then
-                    garrisonData.buildingsShipment = garrisonData.buildingsShipment or {}
-                    garrisonData.buildingsShipment[buildingID] = {C_Garrison.GetLandingPageShipmentInfo(buildingID)}
+                    shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_BUILDING] = shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_BUILDING] or {}
+                    table.insert(shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_BUILDING], {
+                        buildingID = buildingID,
+                        name = name,
+                        texture = texture,
+                        shipmentCapacity = shipmentCapacity,
+                        shipmentsReady = shipmentsReady,
+                        shipmentsTotal = shipmentsTotal,
+                        creationTime = creationTime,
+                        duration = duration,
+                        plotID = building.plotID,
+                    })
                 end
             end
         end
 
         for _, followerShipmentID in ipairs(followerShipments) do
-            local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString, _, _, _, _, followerID = C_Garrison.GetLandingPageShipmentInfoByContainerID(followerShipmentID);
+            local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration = C_Garrison.GetLandingPageShipmentInfoByContainerID(followerShipmentID);
             if ( name and shipmentCapacity > 0) then
-                garrisonData.followersShipments = garrisonData.followersShipments or {}
-                garrisonData.followersShipments[followerShipmentID] =  {C_Garrison.GetLandingPageShipmentInfoByContainerID(followerShipmentID)}
+                shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_FOLLOWER] = shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_FOLLOWER] or {}
+                table.insert(shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_FOLLOWER], {
+                    name = name,
+                    texture = texture,
+                    shipmentCapacity = shipmentCapacity,
+                    shipmentsReady = shipmentsReady,
+                    shipmentsTotal = shipmentsTotal,
+                    creationTime = creationTime,
+                    duration = duration,
+                    containerID = followerShipmentID
+                })
             end
         end
 
         for _, loseShipmentID in ipairs(looseShipments) do
             local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString = C_Garrison.GetLandingPageShipmentInfoByContainerID(loseShipmentID);
             if ( name and shipmentCapacity > 0 ) then
-                garrisonData.looseShipments = garrisonData.looseShipments or {}
-                garrisonData.looseShipments[loseShipmentID] =  {C_Garrison.GetLandingPageShipmentInfoByContainerID(loseShipmentID)}
+                shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_LOOSE] = shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_LOOSE] or {}
+                table.insert(shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_LOOSE], {
+                    name = name,
+                    texture = texture,
+                    shipmentCapacity = shipmentCapacity,
+                    shipmentsReady = shipmentsReady,
+                    shipmentsTotal = shipmentsTotal,
+                    creationTime = creationTime,
+                    duration = duration,
+                    containerID = loseShipmentID
+                })
             end
         end
 
@@ -187,9 +222,16 @@ function GarrisonDataCollector:UPDATE_SHIPMENTS_DATA()
                 for _, talent in ipairs(treeInfo.talents) do
                     if talent.isBeingResearched or talent.id == completeTalentID then
                         if(talent.startTime + talent.researchDuration > GetTime()) then
-                            garrisonData.talentBeingResearched = garrisonData.talentBeingResearched or {}
-                            garrisonData.talentBeingResearched[treeID] = garrisonData.talentBeingResearched[treeID] or {}
-                            garrisonData.talentBeingResearched[treeID][talent.id] = talent
+                            shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_TALENT] = shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_TALENT] or {}
+                            table.insert(shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_TALENT], {
+                                name = talent.name,
+                                texture = talent.icon,
+                                shipmentCapacity = 1,
+                                shipmentsReady = talent.isBeingResearched and 0 or 1,
+                                shipmentsTotal = 1,
+                                creationTime = talent.startTime,
+                                duration = talent.researchDuration,
+                            })
                         end
                     end
                 end
@@ -208,8 +250,9 @@ function GarrisonDataCollector:GARRISON_SHIPMENT_RECEIVED()
 end
 
 --- @private
+--- @param _event string
 --- @param created boolean?
-function GarrisonDataCollector:SHIPMENT_UPDATE(created)
+function GarrisonDataCollector:SHIPMENT_UPDATE(_event, created)
     if(created) then
         C_Garrison.RequestLandingPageShipmentInfo()
     end

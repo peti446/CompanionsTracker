@@ -110,9 +110,7 @@ function OverviewFrame.UpdateMissionsList()
     if(not frame) then return end
 
     local tabGroup = frame.missionsTabGroup
-    --tabGroup:ReleaseChildren()
     local tabStatus = tabGroup.status or tabGroup.localstatus;
-    --tabGroup:SelectTab(tabStatus.selection)
     RenderMissionsTab(tabGroup, nil, tabStatus.selected)
 end
 
@@ -120,7 +118,6 @@ function OverviewFrame.RenderSubPath(frame, _event, insertFrame, path)
     insertFrame:ReleaseChildren()
 
     -- Check the path
-    --local pathValues = Utils:Split(path.value or "", "/")
     if(path == nil or  #path == 0) then
         Utils:Print("Invalid path value on rendering sub path for overview frame, please contact the addon author. Value got is:" .. path)
         return
@@ -129,8 +126,9 @@ function OverviewFrame.RenderSubPath(frame, _event, insertFrame, path)
     local charData = Config.db.global.GarrisonsData[path[2].id][path[2].userData.garrisonID]
 
     -- Create the background group
-    --local charName = path[1].id;
     local garrisonGroup = AceGUI:Create("GarrisonBackgroundGroup")
+    --garrisonGroup:SetUserData("table", {columns = {1, 1}, space = 15})
+    --garrisonGroup:SetLayout("Table")
     garrisonGroup:SetLayout("Flow")
     insertFrame:AddChild(garrisonGroup)
 
@@ -184,6 +182,21 @@ function OverviewFrame.RenderSubPath(frame, _event, insertFrame, path)
     end)
 
     -- Create shipments data
+    local shipmentsGroup = AceGUI:Create("SimpleGroup")
+    garrisonGroup:AddChild(shipmentsGroup)
+    shipmentsGroup:SetUserData("table", {columns = {3.3, 3.3, 3.3}, space = 30, alignH = 60})
+    shipmentsGroup:SetLayout("Table")
+    shipmentsGroup:SetPoint("TOPLEFT", missionsTabGroup.frame, "TOPRIGHT", 0, -20)
+    shipmentsGroup:SetFullHeight(true)
+    for type, dataArray in pairs(charData.shipmentsData or {}) do
+        for _, data in ipairs(dataArray) do
+            ---@type BlizzardGarrisonLandingPageReportShipmentStatusTemplate
+            local shipmentFrame = AceGUI:Create("BlizzardGarrisonLandingPageReportShipmentStatusTemplate") --[[@as BlizzardGarrisonLandingPageReportShipmentStatusTemplate]]
+            shipmentFrame:SetShipmentInfo(type, data)
+            shipmentFrame:SetScale(0.8)
+            shipmentsGroup:AddChild(shipmentFrame)
+        end
+    end
 end
 
 function OverviewFrame.OnCharacterbuttonClicked(button)

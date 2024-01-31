@@ -78,5 +78,17 @@ Constants.GarrionData = {
         followerTypes = {Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower}
     },
 }
+
+
+--- @class CompanionsTrackersEnums
+Constants.Enums = {
+    --- @enum CompanionsTrackerShipmentType
+    ShipmentTypes = {
+        SHIPMENT_TYPE_BUILDING = 1,
+        SHIPMENT_TYPE_FOLLOWER = 2,
+        SHIPMENT_TYPE_TALENT = 3,
+        SHIPMENT_TYPE_LOOSE = 4,
+    }
+}
 -- Sad, this is because of Toshrael ):
 table.sort(Constants.GarrionData, function(a, b) return a.garrisonID < b.garrisonID end)
