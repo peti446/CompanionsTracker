@@ -18,7 +18,6 @@ local OverviewFrame = {}
 local L = ns.L
 local frame = nil
 
-
 local function ReleaseFrame()
     if(frame == nil) then
         return
@@ -95,7 +94,7 @@ local function RenderMissionsTab(self, _event, group)
 
                     -- Update the mission data as time goes by
                     -- TODO: Move this to a timer
-                    if(missionData.missionEndTime < time()) then
+                    if(not missionData.isComplete and (missionData.missionEndTime or time()) < time()) then
                         missionData.isComplete = true
                     end
                     missionFrame:SetMissionInfo(missionData)
@@ -105,6 +104,16 @@ local function RenderMissionsTab(self, _event, group)
         end
     end
 
+end
+
+function OverviewFrame.UpdateMissionsList()
+    if(not frame) then return end
+
+    local tabGroup = frame.missionsTabGroup
+    --tabGroup:ReleaseChildren()
+    local tabStatus = tabGroup.status or tabGroup.localstatus;
+    --tabGroup:SelectTab(tabStatus.selection)
+    RenderMissionsTab(tabGroup, nil, tabStatus.selected)
 end
 
 function OverviewFrame.RenderSubPath(frame, _event, insertFrame, path)
@@ -125,25 +134,56 @@ function OverviewFrame.RenderSubPath(frame, _event, insertFrame, path)
     garrisonGroup:SetLayout("Flow")
     insertFrame:AddChild(garrisonGroup)
 
-
+    -- Create the missions tab
     local missionsTabGroup = AceGUI:Create("TabGroup")
     missionsTabGroup:SetLayout("Flow")
     missionsTabGroup:SetTabs({
         {
-            text = L["Available"],
-            value = "missionsAvailable"
-        },
-        {
             text = L["In progress"],
             value = "missionsInProgress,missionsCompleted"
+        },
+        {
+            text = L["Available"],
+            value = "missionsAvailable"
         }
     })
     missionsTabGroup:SetCallback("OnGroupSelected", RenderMissionsTab)
     missionsTabGroup:SetWidth(425)
     missionsTabGroup:SetFullHeight(true)
     missionsTabGroup:SetUserData("CharData", charData)
-    missionsTabGroup:SelectTab("missionsAvailable")
+
+    local showCompletedTab = false
+    for _, data in pairs(charData.missionsCompleted or {}) do
+        if(#data > 0) then
+            showCompletedTab = true
+            break
+        end
+    end
+    if(not showCompletedTab) then
+        for _,data in pairs(charData.missionsInProgress or {}) do
+            if(#data > 0) then
+                showCompletedTab = true
+                break
+            end
+        end
+    end
+    if(showCompletedTab) then
+        missionsTabGroup:SelectTab("missionsInProgress,missionsCompleted")
+    else
+        missionsTabGroup:SelectTab("missionsAvailable")
+    end
     garrisonGroup:AddChild(missionsTabGroup)
+
+    -- Save so we can rerender
+    frame.missionsTabGroup = missionsTabGroup
+    missionsTabGroup:SetUserData("BucketHandler", CompanionsTracker:RegisterBucketEvent({"GET_ITEM_INFO_RECEIVED"}, 1, OverviewFrame.UpdateMissionsList))
+    missionsTabGroup:SetCallback("OnRelease", function(self)
+        -- Clear up the data
+        CompanionsTracker:UnregisterBucket(self:GetUserData("BucketHandler"))
+        frame.missionsTabGroup = nil
+    end)
+
+    -- Create shipments data
 end
 
 function OverviewFrame.OnCharacterbuttonClicked(button)

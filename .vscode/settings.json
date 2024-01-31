@@ -85,7 +85,8 @@
         "GarrisonLandingPageReportList_InitButtonAvailable",
         "GarrisonLandingPageReportMission_OnClick",
         "GarrisonLandingPageReportList_InitButton",
-        "GarrisonLandingPageReportList_UpdateAvailable"
+        "GarrisonLandingPageReportList_UpdateAvailable",
+        "GarrisonLandingPageReportShipment_OnEnter"
     ],
     "Lua.diagnostics.disable": [
     ]

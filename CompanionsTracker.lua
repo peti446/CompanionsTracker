@@ -1,9 +1,9 @@
 --- @class CompanionsTrackerNamespace
 local ns = select(2, ...)
 
---- @class CompanionsTracker : AceAddon, AceEvent-3.0, AceHook-3.0
+--- @class CompanionsTracker : AceAddon, AceEvent-3.0, AceHook-3.0, AceBucket-3.0
 --- @field Mixins table<string, table>
-local CompanionsTracker = LibStub("AceAddon-3.0"):NewAddon("CompanionsTracker", "AceEvent-3.0", "AceHook-3.0")
+local CompanionsTracker = LibStub("AceAddon-3.0"):NewAddon("CompanionsTracker", "AceEvent-3.0", "AceHook-3.0", "AceBucket-3.0")
 --- @type AceLocale-3.0
 local L = LibStub("AceLocale-3.0"):GetLocale("CompanionsTracker")
 --- @type LibDBIcon-1.0
