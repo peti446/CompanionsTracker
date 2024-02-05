@@ -142,7 +142,8 @@
         "GARRISON_LANDING_SHIPMENT_READY_TO_START",
         "GARRISON_LANDING_RETURN",
         "GARRISON_LANDING_COMPLETED",
-        "GARRISON_LANDING_NEXT"
+        "GARRISON_LANDING_NEXT",
+        "NOT_BOUND"
     ],
     "Lua.diagnostics.disable": [
     ]

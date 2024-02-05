@@ -84,6 +84,7 @@ local function RenderMissionsTab(self, _event, group)
 
     local charData = self:GetUserData("CharData")
     local dataEntries = Utils:Split(group, ",")
+    local renderedData = false;
     for _, dataEntry in ipairs(dataEntries) do
         local data = charData[dataEntry]
         if(data ~= nil) then
@@ -99,11 +100,29 @@ local function RenderMissionsTab(self, _event, group)
                     end
                     missionFrame:SetMissionInfo(missionData)
                     scrollFrame:AddChild(missionFrame)
+                    renderedData = true
                 end
             end
         end
     end
 
+    if(not renderedData) then
+        local label = AceGUI:Create("Label")
+        label:SetText(GARRISON_EMPTY_IN_PROGRESS_LIST)
+        label:SetColor(0.75, 0.75, 0.75)
+        label:SetFontObject(GameFontNormalLarge2)
+        label:SetJustifyH("CENTER")
+        label:SetJustifyV("CENTER")
+        label:SetFullWidth(true)
+        label:SetFullHeight(true)
+        scrollFrame:SetLayout("Fill")
+        scrollFrame:AddChild(label)
+        if(group == "missionsInProgress,missionsCompleted") then
+            label:SetText(GARRISON_EMPTY_IN_PROGRESS_LIST)
+        else
+            label:SetText(L['No Misions available'])
+        end
+    end
 end
 
 function OverviewFrame.UpdateMissionsList()
@@ -146,7 +165,7 @@ function OverviewFrame.RenderSubPath(frame, _event, insertFrame, path)
         }
     })
     missionsTabGroup:SetCallback("OnGroupSelected", RenderMissionsTab)
-    missionsTabGroup:SetWidth(425)
+    missionsTabGroup:SetWidth(440)
     missionsTabGroup:SetFullHeight(true)
     missionsTabGroup:SetUserData("CharData", charData)
 
@@ -184,7 +203,7 @@ function OverviewFrame.RenderSubPath(frame, _event, insertFrame, path)
     -- Create shipments data
     local shipmentsGroup = AceGUI:Create("SimpleGroup")
     garrisonGroup:AddChild(shipmentsGroup)
-    shipmentsGroup:SetUserData("table", {columns = {3.3, 3.3, 3.3}, space = 30, alignH = 60})
+    shipmentsGroup:SetUserData("table", {columns = {3.3, 3.3, 3.3}, space = 30, alignH = 40})
     shipmentsGroup:SetLayout("Table")
     shipmentsGroup:SetPoint("TOPLEFT", missionsTabGroup.frame, "TOPRIGHT", 0, -20)
     shipmentsGroup:SetFullHeight(true)

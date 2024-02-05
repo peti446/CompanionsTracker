@@ -51,6 +51,7 @@ local function Constructor()
     local name = "CompanionsTracker_" .. AceGUI:GetNextWidgetNum(Type)
     local frame = CreateFrame("Button", name, UIParent, "GarrisonLandingPageReportMissionTemplate") --[[@as Button]]
     frame:Hide()
+    frame:SetWidth(425)
     frame:EnableMouse(true)
     frame:SetFrameStrata("MEDIUM")
     frame:SetScript("OnEnter", Frame_OnEnter)
