@@ -87,21 +87,21 @@ local function RenderMissionsTab(self, _event, group)
     local charData = self:GetUserData("CharData")
     local dataEntries = Utils:Split(group, ",")
     local renderedData = false;
+    local currentTime = time()
     for _, dataEntry in ipairs(dataEntries) do
         local data = charData[dataEntry]
         if(data ~= nil) then
             for _, followerTypeData in pairs(data) do
                 for _, missionData in ipairs(followerTypeData) do
-                    ---@type BlizzardGarrisonLandingPageReportMissionTemplate
-                    local missionFrame = AceGUI:Create("BlizzardGarrisonLandingPageReportMissionTemplate") --[[@as BlizzardGarrisonLandingPageReportMissionTemplate]]
-
                     -- Update the mission data as time goes by
                     -- TODO: Move this to a timer
-                    if(not missionData.isComplete and (missionData.missionEndTime or time()) < time()) then
+                    if(not missionData.isComplete and (missionData.missionEndTime or -1) < currentTime) then
                         missionData.isComplete = true
                     end
 
-                    if(missionData.inProgress or missionData.offerEndTime < time()) then
+                    if(missionData.inProgress or missionData.isComplete or (missionData.offerEndTime or -1 < time())) then
+                        ---@type BlizzardGarrisonLandingPageReportMissionTemplate
+                        local missionFrame = AceGUI:Create("BlizzardGarrisonLandingPageReportMissionTemplate") --[[@as BlizzardGarrisonLandingPageReportMissionTemplate]]
                         missionFrame:SetMissionInfo(missionData)
                         scrollFrame:AddChild(missionFrame)
                         renderedData = true

@@ -22,9 +22,8 @@ end
 --- @field frame Button
 local methods = {}
 
-
 function methods:OnAcquire()
-    self.frame:Show()
+    self.frame:Hide()
 end
 
 function methods:GetElementData()
@@ -35,7 +34,7 @@ end
 ---@param info table
 function methods:SetMissionInfo(info)
     self.data = info
-
+    self.frame:Show()
     if(info.inProgress) then
         GarrisonLandingPageReportList_InitButton(self.frame, info)
     else
