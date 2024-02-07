@@ -200,7 +200,7 @@ function GarrisonDataCollector:UPDATE_SHIPMENTS_DATA()
         end
 
         for _, loseShipmentID in ipairs(looseShipments) do
-            local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration, timeleftString = C_Garrison.GetLandingPageShipmentInfoByContainerID(loseShipmentID);
+            local name, texture, shipmentCapacity, shipmentsReady, shipmentsTotal, creationTime, duration = C_Garrison.GetLandingPageShipmentInfoByContainerID(loseShipmentID);
             if ( name and shipmentCapacity > 0 ) then
                 shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_LOOSE] = shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_LOOSE] or {}
                 table.insert(shipmentsDataTable[Enums.ShipmentTypes.SHIPMENT_TYPE_LOOSE], {
@@ -246,7 +246,7 @@ end
 
 --- @private
 function GarrisonDataCollector:GARRISON_SHIPMENT_RECEIVED()
-    self:SHIPMENT_UPDATE(true)
+    self:SHIPMENT_UPDATE("SHIPMENT_UPDATE", true)
 end
 
 --- @private

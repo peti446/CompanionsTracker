@@ -21,7 +21,7 @@ local function Frame_OnClick(frame)
 end
 
 --- @class BlizzardGarrisonLandingPageReportShipmentStatusTemplate : AceGUIWidget
---- @field frame Button
+--- @field frame GarrisonLandingPageReportShipmentStatusTemplate
 local methods = {}
 
 function methods:SetHeight(height)
@@ -35,8 +35,8 @@ end
 function methods:OnAcquire()
     self.frame:Show()
 
-     ---@type BlizzardFrameTemplate
-    local shipmentFrame = self.frame --[[@as BlizzardFrameTemplate]]
+     ---@type GarrisonLandingPageReportShipmentStatusTemplate
+    local shipmentFrame = self.frame
     shipmentFrame.Name:SetText("")
     shipmentFrame.Count:SetText("")
     shipmentFrame.Icon:Show()
@@ -57,14 +57,7 @@ end
 function methods:SetShipmentInfo(shipmentType, info)
     self.data = info
 
-    ---@class BlizzardFrameTemplate : Button
-    ---@field Icon Texture
-    ---@field Name FontString
-    ---@field Count FontString
-    ---@field Swipe Cooldown
-    ---@field Done Texture
-    ---@field Border Texture
-    ---@field BG Texture
+    ---@type GarrisonLandingPageReportShipmentStatusTemplate
     local shipmentFrame = self.frame
     local applyMask = shipmentType ~= ConstantEnums.ShipmentTypes.SHIPMENT_TYPE_FOLLOWER
 
@@ -103,7 +96,9 @@ local function Constructor()
     end
 
     local name = "CompanionsTracker_" .. AceGUI:GetNextWidgetNum(Type)
-    local frame = CreateFrame("Button", name, UIParent, "GarrisonLandingPageReportShipmentStatusTemplate") --[[@as Button]]
+
+    --- @type GarrisonLandingPageReportShipmentStatusTemplate
+    local frame = CreateFrame("Button", name, UIParent, "GarrisonLandingPageReportShipmentStatusTemplate") --[[@as GarrisonLandingPageReportShipmentStatusTemplate]]
     frame:Hide()
     frame:EnableMouse(true)
     frame:SetFrameStrata("MEDIUM")

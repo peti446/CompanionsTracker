@@ -16,6 +16,7 @@ local AceGUI = ns.AceGUI
 local OverviewFrame = {}
 
 local L = ns.L
+--- @type ExpansionsOverviewFrame?
 local frame = nil
 
 local function ReleaseFrame()
@@ -76,7 +77,8 @@ local function RenderMissionsTab(self, _event, group)
     self:SetLayout("Fill")
 
     -- Create the scroll frame
-    local scrollFrame = AceGUI:Create("ScrollFrame")
+    --- @type AceGUIContainer
+    local scrollFrame = AceGUI:Create("ScrollFrame") --[[@as AceGUIContainer]]
     scrollFrame:SetLayout("List")
     scrollFrame:SetFullWidth(true)
     scrollFrame:SetFullHeight(true)
@@ -98,16 +100,22 @@ local function RenderMissionsTab(self, _event, group)
                     if(not missionData.isComplete and (missionData.missionEndTime or time()) < time()) then
                         missionData.isComplete = true
                     end
-                    missionFrame:SetMissionInfo(missionData)
-                    scrollFrame:AddChild(missionFrame)
-                    renderedData = true
+
+                    if(missionData.inProgress or missionData.offerEndTime < time()) then
+                        missionFrame:SetMissionInfo(missionData)
+                        scrollFrame:AddChild(missionFrame)
+                        renderedData = true
+                    end
                 end
             end
         end
     end
 
     if(not renderedData) then
-        local label = AceGUI:Create("Label")
+
+
+        --- @type Label
+        local label = AceGUI:Create("Label") --[[@as Label]]
         label:SetText(GARRISON_EMPTY_IN_PROGRESS_LIST)
         label:SetColor(0.75, 0.75, 0.75)
         label:SetFontObject(GameFontNormalLarge2)
@@ -145,14 +153,14 @@ function OverviewFrame.RenderSubPath(frame, _event, insertFrame, path)
     local charData = Config.db.global.GarrisonsData[path[2].id][path[2].userData.garrisonID]
 
     -- Create the background group
-    local garrisonGroup = AceGUI:Create("GarrisonBackgroundGroup")
-    --garrisonGroup:SetUserData("table", {columns = {1, 1}, space = 15})
-    --garrisonGroup:SetLayout("Table")
+    --- @type GarrisonBackgroundGroup
+    local garrisonGroup = AceGUI:Create("GarrisonBackgroundGroup") --[[@as GarrisonBackgroundGroup]]
     garrisonGroup:SetLayout("Flow")
     insertFrame:AddChild(garrisonGroup)
 
     -- Create the missions tab
-    local missionsTabGroup = AceGUI:Create("TabGroup")
+    --- @type TabGroup
+    local missionsTabGroup = AceGUI:Create("TabGroup") --[[@as TabGroup]]
     missionsTabGroup:SetLayout("Flow")
     missionsTabGroup:SetTabs({
         {
@@ -201,7 +209,8 @@ function OverviewFrame.RenderSubPath(frame, _event, insertFrame, path)
     end)
 
     -- Create shipments data
-    local shipmentsGroup = AceGUI:Create("SimpleGroup")
+    --- @type AceGUIContainer
+    local shipmentsGroup = AceGUI:Create("SimpleGroup") --[[@as AceGUIContainer]]
     garrisonGroup:AddChild(shipmentsGroup)
     shipmentsGroup:SetUserData("table", {columns = {3.3, 3.3, 3.3}, space = 30, alignH = 40})
     shipmentsGroup:SetLayout("Table")
@@ -223,7 +232,7 @@ function OverviewFrame.OnCharacterbuttonClicked(button)
         return
     end
 
-    function GetPathData(garrisonID, name)
+    local function GetPathData(garrisonID, name)
         local subButtomData  = {
             name = name,
             id = name,

@@ -6,6 +6,7 @@ local Type, Version = "ExpansionOverviewFrame", 1
 if not AceGUI or (AceGUI:GetWidgetCount(Type) or 0) >= Version then return end
 
 --- @class ExpansionsOverviewFrame : AceGUIWidget
+--- @field [string] any
 local WidgetMethods = {}
 
 
@@ -93,7 +94,7 @@ function WidgetMethods.SetSelectedTab(self, tabValue)
 end
 
 --- Sets the tab data for the widget
---- @param tabsData {buttonIcon: string, buttonColor?: table, bgTexture: string, value: any, text: string}[]
+--- @param tabsData {buttonIcon: string, buttonColor?: table, bgTexture: string, value: any, text: string, buttonRef?: any}[]
 function WidgetMethods.SetTabsInfo(self, tabsData)
     self.buttonsFrameGroup:ReleaseChildren()
     if(self.tabsData) then
@@ -120,8 +121,8 @@ end
 --- @param data {buttonIcon: string, buttonColor?: table, bgTexture: string, value: any, text: string}
 --- @return ArchaeologyCheckButton the tab button created
 function WidgetMethods.AddTab(self, data)
-    --- @class ArchaeologyCheckButton
-    local currentTab = AceGUI:Create("ArchaeologyCheckButton")
+    --- @type ArchaeologyCheckButton
+    local currentTab = AceGUI:Create("ArchaeologyCheckButton") --[[@as ArchaeologyCheckButton]]
     currentTab:SetImage(data.buttonIcon)
     if(data.buttonColor) then
         currentTab:SetBackgroundColor(unpack(data.buttonColor))
@@ -183,7 +184,7 @@ function WidgetMethods.SetNavBarPath(self, ...)
 	}
 
 	NavBar_Initialize(self.navBar, "NavButtonTemplate", homeData, self.navBar.home, self.navBar.overflow)
-    local homeData = args[1]
+    homeData = args[1]
 
     -- Delete the ones we do not want to iterate over any longer
     args[1] = nil
@@ -248,7 +249,7 @@ end
 local function Constructor()
     local name = "CompanionsTracker" .. Type .. AceGUI:GetNextWidgetNum(Type)
 
-    --- @class Frame : PortraitFrameTemplate
+    --- @type Frame|PortraitFrameTemplate
     local frame = CreateFrame("Frame", name, UIParent, "PortraitFrameTemplate")
     frame:Hide()
     frame:EnableMouse(true)
@@ -300,8 +301,8 @@ local function Constructor()
     end
 
     -- TODO: Change for normal frame
-    --- @class AceGUISimpleGroup : AceGUIWidget
-    local buttonsFrameGroup = AceGUI:Create("SimpleGroup")
+    --- @type AceGUISimpleGroup
+    local buttonsFrameGroup = AceGUI:Create("SimpleGroup") --[[@as AceGUISimpleGroup]]
     buttonsFrameGroup.frame:SetParent(frame)
     buttonsFrameGroup:ClearAllPoints()
     buttonsFrameGroup:SetHeight(400)
@@ -310,33 +311,38 @@ local function Constructor()
     buttonsFrameGroup:SetLayout("List")
     buttonsFrameGroup.frame:Show()
 
-
+    --- @type Frame|InsetFrameTemplate
     local inset = CreateFrame("Frame", nil, nil, "InsetFrameTemplate")
     inset:SetParent(frame)
     inset:ClearAllPoints()
     inset:SetPoint("TOPRIGHT", -4, -60)
     inset:SetPoint("BOTTOMLEFT", 4, 5)
 
+
+    --- @type Frame
     local characterListFrame = CreateFrame("Frame", nil, nil)
     characterListFrame:SetParent(inset)
     characterListFrame:ClearAllPoints()
     characterListFrame:SetPoint("TOPLEFT", 0, -2)
     characterListFrame:SetPoint("BOTTOMRIGHT", -3, 0)
 
+    --- @type Texture
     local expanionBackground = characterListFrame:CreateTexture(nil, "BACKGROUND")
     expanionBackground:SetTexture("Interface\\EncounterJournal\\UI-EJ-Cataclysm")
     expanionBackground:SetAllPoints(characterListFrame, true)
 
 
+
     -- TODO: Change for normal frame, and make add child to go directly here or to the subFrame during the render funtion calls
-    --- @class AceGUIScrollFrame : AceGUIWidget
-    local scrollFrame = AceGUI:Create("ScrollFrame")
+    --- @type AceGUIScrollFrame
+    local scrollFrame = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
     scrollFrame.frame:SetParent(characterListFrame)
     scrollFrame:ClearAllPoints()
     scrollFrame:SetPoint("TOPLEFT", characterListFrame, 14, -50)
     scrollFrame:SetPoint("BOTTOMRIGHT", characterListFrame, 0, 5)
     scrollFrame.scrollbar:SetPoint("BOTTOMLEFT", characterListFrame, "BOTTOMRIGHT", -4, 16)
 
+    --- @type FontString
     local expansionTitle =  characterListFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge2")
     expansionTitle:SetParent(characterListFrame)
     expansionTitle:ClearAllPoints()
@@ -360,6 +366,7 @@ local function Constructor()
     local widget = {
         localstatus = {},
         tabsData = {},
+        status = nil,
         frame = frame,
         navBar = navBar,
         expanionBackground = expanionBackground,

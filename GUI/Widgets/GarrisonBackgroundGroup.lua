@@ -9,7 +9,7 @@ Constructor
 local function Constructor()
 	local name = "CompanionsTracker" .. Type .. AceGUI:GetNextWidgetNum(Type)
 
- 	--- @type Frame
+	--- @type Frame
 	local frame = CreateFrame("Frame", name, UIParent)
 	frame:SetFrameStrata("FULLSCREEN_DIALOG")
 
