@@ -44,6 +44,15 @@ local myOptionsTable = {
                     set = "SetMinimapHidden",
                     get = "GetMinimapHidden",
                 },
+                show_server_name = {
+                    name = L["Show server name"],
+                    desc = L["Shows/Hides the server name in the character list"],
+                    descStyle = "inline",
+                    width = "full",
+                    type = "toggle",
+                    set = "SetShowServerName",
+                    get = "GetShowServerName",
+                },
                 minimap_on_click_expansion_open = {
                     name = L["Left Click on minimap to open expansion"],
                     desc = L["Defines what expansion page will open when left clicking the minimap icon"],
@@ -53,7 +62,7 @@ local myOptionsTable = {
                     values = function()
                         local values = {}
                         for _, data in ipairs(ns.Constants.GarrionData) do
-                            values[data.garrisonID] = Utils:GetIconStr(data.imagePath, 24, 24) .. " " .. data.displayName
+                            values[data.garrisonID] = Utils:GetIconStr(data.iconPath, 24, 24) .. " " .. data.displayName
                         end
 
                         return values
@@ -115,4 +124,12 @@ end
 
 function InterfaceOptions:GetDebugMessages(_)
     return Config.db.profile.debug
+end
+
+function InterfaceOptions:GetShowServerName(_)
+    return Config.db.profile.showServerName
+end
+
+function InterfaceOptions:SetShowServerName(_, value)
+    Config.db.profile.showServerName = value
 end

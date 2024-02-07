@@ -18,6 +18,7 @@ local Defaults =
     {
         ["Version"] = -1,
         ["debug"] = false,
+        ["showServerName"] = false,
         ["minimap"] =
         {
             ["hide"] = false,
@@ -50,6 +51,11 @@ local function GetVersionNumber(str)
     end
 
     if(type(str) == "string") then
+        if(str:match('^v%d+%.%d+%.%d+a?b?%d*$') == nil) then
+            Utils:Print("Invalid version string: " .. str)
+            return -1
+        end
+
         str = string.gsub(str, "v", "")
         -- Remove beta and alpha form string and add respective number to the str
         local extraNumber = 0.003
@@ -83,7 +89,7 @@ end
 Config.InternalVersion = GetVersionNumber("@project-version@")
 --@end-non-debug@]===]
 --@debug@
-Config.InternalVersion = GetVersionNumber("v0.1.3")
+Config.InternalVersion = GetVersionNumber("v0.1.5")
 --@end-debug@
 
 

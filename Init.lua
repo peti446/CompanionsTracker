@@ -15,6 +15,7 @@ function CompanionsTracker:OnInitialize()
 
     -- Register Global Events
     self:RegisterEvent("ADDON_LOADED")
+    self:RegisterEvent("GARRISON_UPDATE")
 
     Utils:DebugPrint("Addon Initializing")
 end
@@ -23,8 +24,12 @@ function CompanionsTracker:OnEnable()
     Utils:DebugPrint("Addon Enabling")
     self:InitMinimapIcon()
     self.Mixins.ExpansionLandingPageMixin:Embed()
+    self:RegisterMessage(self.Events.GarrionDataUpdated)
 end
 
 function CompanionsTracker:OnDisable()
     Utils:DebugPrint("Addon disabling")
+
+
+    self:DisableModule("GarrisonDataCollector")
 end

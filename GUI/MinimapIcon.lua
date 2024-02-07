@@ -32,7 +32,7 @@ function CompanionsTracker:RefreshMinimapIcon()
     end
 
     -- Update icon
-    local iconPath = Utils:GarrisonDataByID(Config.db.profile.minimap.quickAccessExpansionID).imagePath or "Interface\\AddOns\\CompanionsTracker\\Media\\Icons\\draenor_logo"
+    local iconPath = Utils:GarrisonDataByID(Config.db.profile.minimap.quickAccessExpansionID).iconPath or "Interface\\AddOns\\CompanionsTracker\\Media\\Icons\\draenor_logo"
     MinimapIcon:GetMinimapButton("CompanionsTracker").icon:SetTexture(iconPath)
     -- Refresh Position and other data
     MinimapIcon:Refresh("CompanionsTracker", Config.db.profile.minimap)
@@ -54,9 +54,10 @@ function DataBorker:OnTooltipShow()
     self:AddLine((RED_FONT_COLOR_CODE .. "%s " .. NORMAL_FONT_COLOR_CODE .. "%s|r"):format(L["Right Click"], L["Open Options panel"]))
 end
 
+
 function DataBorker:OnClick(button, down)
     if(button == "LeftButton") then
-        Utils:OpenGarrisonWindow(Config.db.profile.minimap.quickAccessExpansionID)
+        CompanionsTracker:ShowOverviewFrame(Config.db.profile.minimap.quickAccessExpansionID)
     elseif(button == "RightButton") then
         CompanionsTracker:OpenOptionsGUI()
     end

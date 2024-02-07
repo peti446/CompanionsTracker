@@ -80,7 +80,7 @@ local function OnMouseEnter(self)
     end
 
     GameTooltip:SetOwner(self.frame, "ANCHOR_RIGHT", 0, -75)
-    GameTooltip:SetText(Utils:ColorStr(data.displayName, data.backbroundColor))
+    GameTooltip:SetText(Utils:ColorStr(data.displayName, data.buttonBackgroundColor))
 
     if(numMissionsAvailable > 0) then
         GameTooltip:AddLine(L["Available missions: %s"]:format(Utils:ColorStr(tostring(numMissionsAvailable), 'FFAE5700')))
@@ -117,13 +117,13 @@ function ExpansionLandingPageMixin:OnShow()
 
     for _, data in ipairs(Constants.GarrionData) do
         local id = data.garrisonID
-        if(C_Garrison.GetGarrisonInfo(id) ~= nil) then
+        if(C_Garrison.HasGarrison(id)) then
             --- @class ArchaeologyCheckButton
             --- @diagnostic disable-next-line: param-type-mismatch
             local currentTab = AceGUI:Create("ArchaeologyCheckButton")
-            currentTab:SetImage(data.imagePath)
-            if(data.backbroundColor) then
-                currentTab:SetBackgroundColor(unpack(data.backbroundColor))
+            currentTab:SetImage(data.iconPath)
+            if(data.buttonBackgroundColor) then
+                currentTab:SetBackgroundColor(unpack(data.buttonBackgroundColor))
             end
             currentTab:SetUserData("ExpansionID", id)
             currentTab:SetCallback("OnValueChanged", OnExpanionTabValueChanged)
