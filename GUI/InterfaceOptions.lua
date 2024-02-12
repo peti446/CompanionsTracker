@@ -247,7 +247,7 @@ function InterfaceOptions:GetShowServerName(_)
 end
 
 function InterfaceOptions:SetShowServerName(_, value)
-    Config.db.global.showServerName = value
+    Config.db.profile.showServerName = value
 end
 
 function InterfaceOptions:GetNotifications(_)
