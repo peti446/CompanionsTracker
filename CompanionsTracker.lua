@@ -90,5 +90,5 @@ Constants.Enums = {
         SHIPMENT_TYPE_LOOSE = 4,
     }
 }
--- Sad, this is because of Toshrael ):
+-- Sad, this is because of Toshirael ):
 table.sort(Constants.GarrionData, function(a, b) return a.garrisonID < b.garrisonID end)

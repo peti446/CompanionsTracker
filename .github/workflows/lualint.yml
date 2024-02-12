@@ -2,6 +2,8 @@ name: Liting and Artifact generation
 
 on:
   push:
+    tags-ignore:
+      - '**'
   pull_request:
 
 jobs:

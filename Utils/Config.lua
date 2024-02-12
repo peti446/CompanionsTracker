@@ -13,6 +13,10 @@ local Defaults =
     global =
     {
         ["Version"] = -1,
+        ["notifications"] = {
+            ["enabled"] = false,
+            ["expansions"] = {}
+        }
     },
     profile =
     {

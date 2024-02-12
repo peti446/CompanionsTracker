@@ -9,6 +9,9 @@ local Config = ns.Config
 --- @type CompanionsTrackerUtils
 local Utils = ns.Utils
 
+--- @type CompanionsTrackerConstants
+local Constants = ns.Constants
+
 --- @type table
 local L = ns.L
 
@@ -72,10 +75,57 @@ local myOptionsTable = {
                 }
             },
         },
+        notifications_group = {
+            name = L["Notifications Settings"],
+            type = "group",
+            order = 1,
+            args = {
+                header = {
+                    type = "header",
+                    order = 0,
+                    name = L["Notifications Configurations"],
+                },
+                label = {
+                    type = "description",
+                    order = 1,
+                    name = CreateColor(1,0,0):WrapTextInColorCode(L["These settings are global and will affect all characters on this account."]),
+                },
+                notifications = {
+                    name = L["Enable Notifications"],
+                    desc = L["Enables/Disables notifications on missions completion of other characters"],
+                    order = 2,
+                    width = "full",
+                    type = "toggle",
+                    set = "SetNotifications",
+                    get = "GetNotifications",
+                },
+                expansions_config = {
+                    name = L["Expansions Notifications Configurations"],
+                    desc = L["Configure the notifications for expansion"],
+                    type = "group",
+                    order = 3,
+                    childGroups = "tab",
+                    get = function(info)
+                        local value = Config.db.global.notifications.expansions[info[#info-1]] and Config.db.global.notifications.expansions[info[#info-1]][info[#info]]
+                        if(type(value) == "boolean") then
+                            return value
+                        end
+                        return true
+                    end,
+                    set = function(info, value)
+                        Config.db.global.notifications.expansions[info[#info-1]] = Config.db.global.notifications.expansions[info[#info-1]] or {}
+                        Config.db.global.notifications.expansions[info[#info-1]][info[#info]] = value
+                    end,
+                    hidden = function()
+                        return not Config.db.global.notifications
+                    end,
+                }
+            },
+        },
         debug_group = {
             name = L["Debug Settings"],
             type = "group",
-            order = 1,
+            order = 2,
             args = {
                 debug_messages = {
                     name = L["Show debug messages"],
@@ -91,8 +141,74 @@ local myOptionsTable = {
     }
 }
 
+setmetatable(myOptionsTable.args.notifications_group.args.expansions_config, {__index = function(_table, key)
+    if(key ~= "args") then return nil end
+
+    local finalTable = {}
+    for _, expansionsData in ipairs(Constants.GarrionData) do
+        local expansionSettings = {
+            name = expansionsData.displayName,
+            type = "group",
+            args = {
+                enabled = {
+                    name = L["Enable Notifications"],
+                    desc = L["Enables/Disables notifications for this expansion"],
+                    width = "full",
+                    type = "toggle",
+                    order = 0,
+                },
+                header = {
+                    type = "header",
+                    order = 1,
+                    name = L["Per Character Configurations"],
+                },
+                label = {
+                    type = "description",
+                    order = 2,
+                    name = L["Select the characters you want to show notifications for this expansion"],
+                },
+                reset = {
+                    name = L["Reset"],
+                    desc = L["Resets the notifications for this expansion to the default settings"],
+                    type = "execute",
+                    order = 3,
+                    func = function(info)
+                        local enabled = Config.db.global.notifications.expansions[info[#info-1]] and Config.db.global.notifications.expansions[info[#info-1]].enabled
+                        Config.db.global.notifications.expansions[info[#info-1]] = {
+                            enabled = enabled
+                        }
+                    end,
+                },
+
+            }
+        }
+
+        local i = 4
+        for name, _ in pairs(Config.db.global.GarrisonsData) do
+            local charCheckbox = {
+                name =  function(info)
+                    local value = Config.db.global.notifications.expansions[info[#info-1]] and Config.db.global.notifications.expansions[info[#info-1]][info[#info]]
+                    if(type(value) ~= "boolean") then
+                        value = true
+                    end
+                    return value and CreateColor(0, 1, 0):WrapTextInColorCode(name) or CreateColor(1, 0, 0):WrapTextInColorCode(name)
+                end,
+                order = i,
+                width = "full",
+                type = "toggle",
+            }
+            i = i + 1
+            expansionSettings.args[name] = charCheckbox
+        end
+
+        finalTable[tostring(expansionsData.garrisonID)] = expansionSettings
+    end
+
+    return finalTable
+end })
+
 function CompanionsTracker:RegisterOptionsGUI()
-    AceConfig:RegisterOptionsTable("CompanionsTracker", myOptionsTable)
+    AceConfig:RegisterOptionsTable("CompanionsTracker", myOptionsTable, {"/companionstracker", "/ct"})
     InterfaceOptions.frame = AceConfigDialog:AddToBlizOptions("CompanionsTracker", "Companions Tracker")
 end
 
@@ -131,5 +247,13 @@ function InterfaceOptions:GetShowServerName(_)
 end
 
 function InterfaceOptions:SetShowServerName(_, value)
-    Config.db.profile.showServerName = value
+    Config.db.global.showServerName = value
+end
+
+function InterfaceOptions:GetNotifications(_)
+    return Config.db.global.notifications.enabled
+end
+
+function InterfaceOptions:SetNotifications(_, value)
+    Config.db.global.notifications.enabled = value
 end
