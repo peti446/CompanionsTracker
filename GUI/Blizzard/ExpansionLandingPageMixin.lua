@@ -107,12 +107,13 @@ function ExpansionLandingPageMixin:OnShow()
     --- @class AceGUISimpleGroup : AceGUIWidget
     --- @field frame Frame
     local group = AceGUI:Create("SimpleGroup")
-    group:SetParent(ExpansionLandingPage)
+    group.frame:SetParent(ExpansionLandingPage)
     group:ClearAllPoints()
     group:SetHeight(400)
-    group:SetWidth(100)
+    group:SetWidth(200)
     group:SetPoint("TOPLEFT", ExpansionLandingPage, "TOPRIGHT", 0, -75)
     group:SetLayout("List")
+    group.frame:SetFrameStrata("MEDIUM")
     group.frame:Show()
 
     for _, data in ipairs(Constants.GarrionData) do
@@ -131,6 +132,7 @@ function ExpansionLandingPageMixin:OnShow()
             currentTab:SetCallback("OnLeave", function()
                 GameTooltip:Hide()
             end)
+            currentTab.frame:SetScale(1.4)
             group:AddChild(currentTab)
         end
     end
