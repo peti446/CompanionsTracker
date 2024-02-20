@@ -5,6 +5,7 @@
 ## Version: @project-version@
 ## Notes: Allows you to track all followers/companions missions from all expansions, and get notifications when missions complete
 ## Notes-ruRU: Позволяет отслеживать все миссии соратников/компаньонов из всех дополнений и получать уведомления о завершении миссий
+## Notes-esES: Permite rastrear todas las misiones de seguidores/compañeros de todas las expansiones y recibir notificaciones cuando se completen
 ## LoadOnDemand: 0
 ## SavedVariables: CompanionsTrackerDB
 ## X-Curse-Project-ID: 944606
@@ -20,7 +21,9 @@ Utils/GarrisonWindow.lua
 Utils/ConstsHelpers.lua
 Utils/TextureUtils.lua
 
-DataCollectors/GarrionDataCollector.lua
+Modules/DataCollectors/GarrionDataCollector.lua
+Modules/Notifications/Notifications.lua
+Modules/Notifications/GarrisonNotificationToast.xml
 
 GUI/InterfaceOptions.lua
 GUI/MinimapIcon.lua

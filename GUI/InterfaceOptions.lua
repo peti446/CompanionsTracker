@@ -106,15 +106,25 @@ local myOptionsTable = {
                     order = 3,
                     childGroups = "tab",
                     get = function(info)
-                        local value = Config.db.global.notifications.expansions[info[#info-1]] and Config.db.global.notifications.expansions[info[#info-1]][info[#info]]
+                        local value = Config.db.global.notifications.expansions[tonumber(info[#info-1])] and Config.db.global.notifications.expansions[tonumber(info[#info-1])][info[#info]]
                         if(type(value) == "boolean") then
                             return value
                         end
                         return true
                     end,
                     set = function(info, value)
-                        Config.db.global.notifications.expansions[info[#info-1]] = Config.db.global.notifications.expansions[info[#info-1]] or {}
-                        Config.db.global.notifications.expansions[info[#info-1]][info[#info]] = value
+                        Config.db.global.notifications.expansions[tonumber(info[#info-1])] = Config.db.global.notifications.expansions[tonumber(info[#info-1])] or {}
+                        Config.db.global.notifications.expansions[tonumber(info[#info-1])][info[#info]] = value
+                        -- Update the notification module for notifications
+                        local module = CompanionsTracker:GetModule("Notifications")  --[[@as NotificationsModule]]
+                        if(not module:IsEnabled()) then
+                            return
+                        end
+                        if(info[#info] == "enabled") then
+                            module:SetExpansionEnabled(tonumber(info[#info-1]), value)
+                        else
+                            module:SetCharacterState(info[#info], tonumber(info[#info-1]), value)
+                        end
                     end,
                     hidden = function()
                         return not Config.db.global.notifications
@@ -173,8 +183,8 @@ setmetatable(myOptionsTable.args.notifications_group.args.expansions_config, {__
                     type = "execute",
                     order = 3,
                     func = function(info)
-                        local enabled = Config.db.global.notifications.expansions[info[#info-1]] and Config.db.global.notifications.expansions[info[#info-1]].enabled
-                        Config.db.global.notifications.expansions[info[#info-1]] = {
+                        local enabled = Config.db.global.notifications.expansions[tonumber(info[#info-1])] and Config.db.global.notifications.expansions[tonumber(info[#info-1])].enabled
+                        Config.db.global.notifications.expansions[tonumber(info[#info-1])] = {
                             enabled = enabled
                         }
                     end,
@@ -187,7 +197,7 @@ setmetatable(myOptionsTable.args.notifications_group.args.expansions_config, {__
         for name, _ in pairs(Config.db.global.GarrisonsData) do
             local charCheckbox = {
                 name =  function(info)
-                    local value = Config.db.global.notifications.expansions[info[#info-1]] and Config.db.global.notifications.expansions[info[#info-1]][info[#info]]
+                    local value = Config.db.global.notifications.expansions[tonumber(info[#info-1])] and Config.db.global.notifications.expansions[tonumber(info[#info-1])][info[#info]]
                     if(type(value) ~= "boolean") then
                         value = true
                     end
@@ -256,4 +266,10 @@ end
 
 function InterfaceOptions:SetNotifications(_, value)
     Config.db.global.notifications.enabled = value
+    local module = CompanionsTracker:GetModule("Notifications")  --[[@as NotificationsModule]]
+    if(value) then
+        module:Enable()
+    else
+        module:Disable()
+    end
 end
