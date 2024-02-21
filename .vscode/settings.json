@@ -201,7 +201,8 @@
         "ENCOUNTER_JOURNAL_LINK_BUTTON_TUTORIAL",
         "BONUS_ROLL_REWARD_ARTIFACT_POWER",
         "DifficultyUtil",
-        "ID"
+        "ID",
+        "SELECTED_CHAT_FRAME"
     ],
     "Lua.diagnostics.disable": [
     ]

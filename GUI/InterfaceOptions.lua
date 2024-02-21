@@ -75,10 +75,12 @@ local myOptionsTable = {
                 }
             },
         },
-        notifications_group = {
+        notifications = {
             name = L["Notifications Settings"],
             type = "group",
             order = 1,
+            set = "SimpleSetGlobal",
+            get = "SimpleGetGlobal",
             args = {
                 header = {
                     type = "header",
@@ -90,20 +92,36 @@ local myOptionsTable = {
                     order = 1,
                     name = CreateColor(1,0,0):WrapTextInColorCode(L["These settings are global and will affect all characters on this account."]),
                 },
-                notifications = {
+                enabled = {
                     name = L["Enable Notifications"],
                     desc = L["Enables/Disables notifications on missions completion of other characters"],
                     order = 2,
                     width = "full",
                     type = "toggle",
                     set = "SetNotifications",
-                    get = "GetNotifications",
+                },
+                disableInInstances = {
+                    name = L["Disable in instances"],
+                    desc =  "(Not yet implemented)" .. L["Disables notifications when the player is in a instance group"],
+                    descStyle  = "inline",
+                    order = 3,
+                    width = "full",
+                    type = "toggle",
+                },
+                combatEndDelay = {
+                    name = L["Delay after combat to show notifications"],
+                    desc = L["The time in seconds to wait after combat to show the notifications"],
+                    order = 4,
+                    width = "full",
+                    type = "range",
+                    softMin = 0,
+                    softMax = 120,
                 },
                 expansions_config = {
                     name = L["Expansions Notifications Configurations"],
                     desc = L["Configure the notifications for expansion"],
                     type = "group",
-                    order = 3,
+                    order = 4,
                     childGroups = "tab",
                     get = function(info)
                         local value = Config.db.global.notifications.expansions[tonumber(info[#info-1])] and Config.db.global.notifications.expansions[tonumber(info[#info-1])][info[#info]]
@@ -151,7 +169,7 @@ local myOptionsTable = {
     }
 }
 
-setmetatable(myOptionsTable.args.notifications_group.args.expansions_config, {__index = function(_table, key)
+setmetatable(myOptionsTable.args.notifications.args.expansions_config, {__index = function(_table, key)
     if(key ~= "args") then return nil end
 
     local finalTable = {}
@@ -226,6 +244,50 @@ function CompanionsTracker:OpenOptionsGUI()
     InterfaceOptionsFrame_OpenToCategory(InterfaceOptions.frame)
 end
 
+function InterfaceOptions:SimpleSetGlobal(info, value)
+    local db = Config.db.global or {}
+    for i, k in ipairs(info) do
+        if(i < #info) then
+            db = db[k]
+        end
+    end
+
+    db[info[#info]] = value
+end
+
+function InterfaceOptions:SimpleGetGlobal(info)
+    local db = Config.db.global or {}
+    for i, k in ipairs(info) do
+        if(i < #info) then
+            db = db[k]
+        end
+    end
+
+    return db[info[#info]]
+end
+
+function InterfaceOptions:SimpleSetProfile(info, value)
+    local db = Config.db.profile or {}
+    for i, k in ipairs(info) do
+        if(i < #info) then
+            db = db[k]
+        end
+    end
+
+    db[info[#info]] = value
+end
+
+function InterfaceOptions:SimpleGetProfile(info)
+    local db = Config.db.profile or {}
+    for i, k in ipairs(info) do
+        if(i < #info) then
+            db = db[k]
+        end
+    end
+
+    return db[info[#info]]
+end
+
 function InterfaceOptions:SetMinimapHidden(_, value)
     Config.db.profile.minimap.hide = value
     CompanionsTracker:RefreshMinimapIcon()
@@ -258,10 +320,6 @@ end
 
 function InterfaceOptions:SetShowServerName(_, value)
     Config.db.profile.showServerName = value
-end
-
-function InterfaceOptions:GetNotifications(_)
-    return Config.db.global.notifications.enabled
 end
 
 function InterfaceOptions:SetNotifications(_, value)

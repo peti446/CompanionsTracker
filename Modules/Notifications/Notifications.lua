@@ -1,6 +1,11 @@
 local ns = select(2, ...)
---- @class NotificationsModule : AceTimer-3.0, AceModule
-local Notifications = ns.CompanionsTracker:NewModule("Notifications", "AceTimer-3.0")
+--- @class NotificationsModule : AceTimer-3.0, AceEvent-3.0, AceModule
+local Notifications = ns.CompanionsTracker:NewModule("Notifications", "AceTimer-3.0", "AceEvent-3.0")
+--- @type AceLocale-3.0
+local L = ns.L
+
+--- @class CompanionsTrackerConfig
+local Config = ns.Config
 
 local function Setup(frame, classID, characterName, missionName)
     local className = select(2, GetClassInfo(classID))
@@ -10,9 +15,10 @@ local function Setup(frame, classID, characterName, missionName)
 end
 
 function Notifications:OnInitialize()
-    self.alertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("CompanionsTrackerMissionNotification", Setup, 3, 15)
+    self.alertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("CompanionsTrackerMissionNotification", Setup, 4, 15)
     self.registeredTimer = {}
     self.disabledCharacters = {}
+    self.pendingNotifications = {}
 end
 
 function Notifications:OnDisable()
@@ -81,8 +87,29 @@ function Notifications:RegisterCharacter(characterName, expansionID, garrisonDat
 
     for _, missionDataList in ipairs(garrisonData.missionsCompleted or {}) do
         for _, missionData in ipairs(missionDataList) do
-            local missionName = missionData.missionName
+            local missionName = missionData.name
             self:ShowNotification(classID, characterName, expansionID, missionName)
+        end
+    end
+
+
+    -- Do shipments notifiactionr registration
+    for _type, shipmentDataList in pairs(garrisonData.shipmentsData) do
+        for _, shipmentData in ipairs(shipmentDataList) do
+            if(shipmentData.duration ~= nil) then
+                local missionName = L['Shipmnet: %s']:format(shipmentData.name)
+                local timeLeft = shipmentData.duration - time()
+                if(timeLeft <= 0) then
+                    self:ShowNotification(classID, characterName, expansionID, shipmentData.name)
+                else
+                    local index = 0
+                    while index < shipmentData.shipmentsTotal do
+                        local id = self:ScheduleTimer("ShowNotification", timeLeft + (index*shipmentData.duration), classID, characterName, expansionID, missionName)
+                        table.insert(self.registeredTimer, id)
+                        index = index + 1
+                    end
+                end
+            end
         end
     end
 end
@@ -95,6 +122,25 @@ end
 ---@private
 function Notifications:ShowNotification(classID, characterName, expansionID, missionName)
     if(self:IsCharacterEnabled(expansionID, characterName)) then
-        self.alertSystem:AddAlert(classID, characterName, missionName)
+        if(not UnitAffectingCombat("player")) then
+            self.alertSystem:AddAlert(classID, characterName, missionName)
+        else
+            table.insert(self.pendingNotifications, {classID, characterName, expansionID, missionName})
+            self:RegisterEvent("PLAYER_REGEN_ENABLED", "ShowPendingNotifications")
+        end
     end
+end
+
+
+---@private
+function Notifications:ShowPendingNotifications()
+    for _, data in ipairs(self.pendingNotifications) do
+        if(Config.db.global.notifications.combatEndDelay > 0) then
+            self:ScheduleTimer("ShowNotification", Config.db.global.notifications.combatEndDelay, unpack(data))
+        else
+            self.alertSystem:AddAlert(unpack(data))
+        end
+    end
+    self.pendingNotifications = {}
+    self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 end

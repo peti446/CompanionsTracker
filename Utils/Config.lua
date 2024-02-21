@@ -14,6 +14,8 @@ local Defaults =
     {
         ["Version"] = -1,
         ["notifications"] = {
+            ["disableInInstances"] = false,
+            ["combatEndDelay"] = 0,
             ["enabled"] = false,
             ["expansions"] = {}
         }
