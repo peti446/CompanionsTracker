@@ -122,6 +122,7 @@ end
 --- @return ArchaeologyCheckButton the tab button created
 function WidgetMethods.AddTab(self, data)
     --- @type ArchaeologyCheckButton
+    ---@diagnostic disable-next-line: param-type-mismatch
     local currentTab = AceGUI:Create("ArchaeologyCheckButton") --[[@as ArchaeologyCheckButton]]
     currentTab:SetImage(data.buttonIcon)
     if(data.buttonColor) then

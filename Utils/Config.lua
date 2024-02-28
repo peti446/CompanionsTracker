@@ -7,7 +7,7 @@ local Utils = ns.Utils
 local Config = ns.Config or {}
 ns.Config = Config
 
---- @type AceDBObject-3.0
+--- @type AceDB.Schema
 local Defaults =
 {
     global =
@@ -35,11 +35,10 @@ local Defaults =
         ["Version"] = -1,
     }
 }
---- @type AceDBObject-3.0
-Config.db = {}
 
 --- Initialize the DB
 function Config:Init()
+    --- @type AceDBObject-3.0
     Config.db = LibStub("AceDB-3.0"):New("CompanionsTrackerDB", Defaults)
     self:Update()
 end

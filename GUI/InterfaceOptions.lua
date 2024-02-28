@@ -123,17 +123,21 @@ local myOptionsTable = {
                         return true
                     end,
                     set = function(info, value)
-                        Config.db.global.notifications.expansions[tonumber(info[#info-1])] = Config.db.global.notifications.expansions[tonumber(info[#info-1])] or {}
-                        Config.db.global.notifications.expansions[tonumber(info[#info-1])][info[#info]] = value
+                        if(tonumber(info[#info-1]) == nil) then
+                            return;
+                        end
+                        local garrisonID = tonumber(info[#info-1]) --[[@as number]]
+                        Config.db.global.notifications.expansions[garrisonID] = Config.db.global.notifications.expansions[garrisonID] or {}
+                        Config.db.global.notifications.expansions[garrisonID][info[#info]] = value
                         -- Update the notification module for notifications
                         local module = CompanionsTracker:GetModule("Notifications")  --[[@as NotificationsModule]]
                         if(not module:IsEnabled()) then
                             return
                         end
                         if(info[#info] == "enabled") then
-                            module:SetExpansionEnabled(tonumber(info[#info-1]), value)
+                            module:SetExpansionEnabled(garrisonID, value)
                         else
-                            module:SetCharacterState(info[#info], tonumber(info[#info-1]), value)
+                            module:SetCharacterState(info[#info], garrisonID, value)
                         end
                     end,
                     hidden = function()

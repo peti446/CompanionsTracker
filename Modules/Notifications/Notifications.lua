@@ -77,6 +77,7 @@ function Notifications:RegisterCharacter(characterName, expansionID, garrisonDat
             local missionName = missionData.name
             local timeLeft = missionData.missionEndTime - time()
             if(timeLeft > 0 and not missionData.completed) then
+                ---@diagnostic disable-next-line: param-type-mismatch
                 local id = self:ScheduleTimer("ShowNotification", timeLeft, classID, characterName, expansionID, missionName)
                 table.insert(self.registeredTimer, id)
             else
@@ -104,6 +105,7 @@ function Notifications:RegisterCharacter(characterName, expansionID, garrisonDat
                 else
                     local index = 0
                     while index < shipmentData.shipmentsTotal do
+                        ---@diagnostic disable-next-line: param-type-mismatch
                         local id = self:ScheduleTimer("ShowNotification", timeLeft + (index*shipmentData.duration), classID, characterName, expansionID, missionName)
                         table.insert(self.registeredTimer, id)
                         index = index + 1
@@ -136,6 +138,7 @@ end
 function Notifications:ShowPendingNotifications()
     for _, data in ipairs(self.pendingNotifications) do
         if(Config.db.global.notifications.combatEndDelay > 0) then
+            ---@diagnostic disable-next-line: param-type-mismatch
             self:ScheduleTimer("ShowNotification", Config.db.global.notifications.combatEndDelay, unpack(data))
         else
             self.alertSystem:AddAlert(unpack(data))
