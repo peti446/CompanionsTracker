@@ -8,6 +8,7 @@ on:
 
 jobs:
     Lint-Project:
+      name: "Linting and Artifact generation for push"
       if: startsWith(github.ref, 'refs/tags/v') == false
       runs-on: ubuntu-latest
       steps:
