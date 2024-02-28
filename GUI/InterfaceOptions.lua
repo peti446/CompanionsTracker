@@ -100,14 +100,6 @@ local myOptionsTable = {
                     type = "toggle",
                     set = "SetNotifications",
                 },
-                disableInInstances = {
-                    name = L["Disable in instances"],
-                    desc =  "(Not yet implemented)" .. L["Disables notifications when the player is in a instance group"],
-                    descStyle  = "inline",
-                    order = 3,
-                    width = "full",
-                    type = "toggle",
-                },
                 combatEndDelay = {
                     name = L["Delay after combat to show notifications"],
                     desc = L["The time in seconds to wait after combat to show the notifications"],
