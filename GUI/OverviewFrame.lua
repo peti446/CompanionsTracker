@@ -101,6 +101,7 @@ local function RenderMissionsTab(self, _event, group)
 
                     if(missionData.inProgress or missionData.isComplete or (missionData.offerEndTime or -1 < time())) then
                         ---@type BlizzardGarrisonLandingPageReportMissionTemplate
+                        ---@diagnostic disable-next-line: param-type-mismatch
                         local missionFrame = AceGUI:Create("BlizzardGarrisonLandingPageReportMissionTemplate") --[[@as BlizzardGarrisonLandingPageReportMissionTemplate]]
                         missionFrame:SetMissionInfo(missionData)
                         scrollFrame:AddChild(missionFrame)
@@ -154,6 +155,7 @@ function OverviewFrame.RenderSubPath(frame, _event, insertFrame, path)
 
     -- Create the background group
     --- @type GarrisonBackgroundGroup
+    ---@diagnostic disable-next-line: param-type-mismatch
     local garrisonGroup = AceGUI:Create("GarrisonBackgroundGroup") --[[@as GarrisonBackgroundGroup]]
     garrisonGroup:SetLayout("Flow")
     insertFrame:AddChild(garrisonGroup)
@@ -213,12 +215,14 @@ function OverviewFrame.RenderSubPath(frame, _event, insertFrame, path)
     local shipmentsGroup = AceGUI:Create("SimpleGroup") --[[@as AceGUIContainer]]
     garrisonGroup:AddChild(shipmentsGroup)
     shipmentsGroup:SetUserData("table", {columns = {3.3, 3.3, 3.3}, space = 30, alignH = 40})
+    ---@diagnostic disable-next-line: param-type-mismatch
     shipmentsGroup:SetLayout("Table")
     shipmentsGroup:SetPoint("TOPLEFT", missionsTabGroup.frame, "TOPRIGHT", 0, -20)
     shipmentsGroup:SetFullHeight(true)
     for type, dataArray in pairs(charData.shipmentsData or {}) do
         for _, data in ipairs(dataArray) do
             ---@type BlizzardGarrisonLandingPageReportShipmentStatusTemplate
+            ---@diagnostic disable-next-line: param-type-mismatch
             local shipmentFrame = AceGUI:Create("BlizzardGarrisonLandingPageReportShipmentStatusTemplate") --[[@as BlizzardGarrisonLandingPageReportShipmentStatusTemplate]]
             shipmentFrame:SetShipmentInfo(type, data)
             shipmentFrame:SetScale(0.8)
@@ -287,6 +291,7 @@ function OverviewFrame.OnTabChanged(frame, _event, value)
                 sanitizedName = Utils:Split(name, "-")[1]
             end
             --- @type CharacterOverviewButton
+            ---@diagnostic disable-next-line: param-type-mismatch
             local button = AceGUI:Create("CharacterOverviewFrame")  --[[@as CharacterOverviewButton]]
             button:SetTitle(sanitizedName)
             button:SetBackgroundAtlas(ns.TextureUtils:GetSpecThumbnailTexture(data.specID), true, "TRILINEAR")

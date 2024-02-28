@@ -2,10 +2,13 @@ name: Liting and Artifact generation
 
 on:
   push:
+    tags-ignore:
+      - '**'
   pull_request:
 
 jobs:
     Lint-Project:
+      name: "Linting and Artifact generation for push"
       if: startsWith(github.ref, 'refs/tags/v') == false
       runs-on: ubuntu-latest
       steps:

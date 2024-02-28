@@ -132,6 +132,7 @@ function GarrisonDataCollector:GARRISON_FOLLOWER_LIST_UPDATE(followerTypeArray)
 
         Utils:DebugPrint(("Updating data for followers of type %d"):format(id))
 
+        ---@diagnostic disable-next-line: redundant-parameter
         local followers = C_Garrison.GetFollowers(id)
         local garrisonID = self.followerTypeToGarrisonType[id]
         self.garrisonsData[garrisonID] = self.garrisonsData[garrisonID] or {}
