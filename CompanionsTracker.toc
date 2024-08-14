@@ -9,6 +9,7 @@
 ## LoadOnDemand: 0
 ## SavedVariables: CompanionsTrackerDB
 ## X-Curse-Project-ID: 944606
+## X-Wago-ID: L6JDy2Gv
 
 embeds_libs.xml
 embeds_locales.xml
