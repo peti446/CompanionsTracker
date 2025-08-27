@@ -233,11 +233,13 @@ end })
 
 function CompanionsTracker:RegisterOptionsGUI()
     AceConfig:RegisterOptionsTable("CompanionsTracker", myOptionsTable, {"/companionstracker", "/ct"})
-    InterfaceOptions.frame = AceConfigDialog:AddToBlizOptions("CompanionsTracker", "Companions Tracker")
+    local frame, id = AceConfigDialog:AddToBlizOptions("CompanionsTracker", "Companions Tracker");
+    InterfaceOptions.frame = frame
+    InterfaceOptions.id = id
 end
 
 function CompanionsTracker:OpenOptionsGUI()
-    InterfaceOptionsFrame_OpenToCategory(InterfaceOptions.frame)
+     Settings.OpenToCategory(InterfaceOptions.id, true)
 end
 
 function InterfaceOptions:SimpleSetGlobal(info, value)
