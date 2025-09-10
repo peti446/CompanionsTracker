@@ -88,12 +88,3 @@ jobs:
           git push origin "$VERSION"
           
           echo "Successfully created and pushed tag: $VERSION"
-
-      - name: Create release
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          gh release create "$VERSION" \
-            --title "Release $VERSION" \
-            --notes "Release $VERSION - This release was created automatically via GitHub Actions."
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
