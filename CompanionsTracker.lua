@@ -88,6 +88,13 @@ Constants.Enums = {
         SHIPMENT_TYPE_FOLLOWER = 2,
         SHIPMENT_TYPE_TALENT = 3,
         SHIPMENT_TYPE_LOOSE = 4,
+    },
+    --- @enum CompanionsTrackerSortType
+    SortTypes = {
+        DEFAULT = 0,
+        MISSIONS_COMPLETED = 1,
+        MISSIONS_IN_PROGRESS = 2,
+        MISSIONS_AVAILABLE = 3,
     }
 }
 -- Sad, this is because of Toshirael ):
