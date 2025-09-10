@@ -94,8 +94,6 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           gh release create "$VERSION" \
             --title "Release $VERSION" \
-            --notes "Release $VERSION
-
-This release was created automatically via GitHub Actions."
+            --notes "Release $VERSION - This release was created automatically via GitHub Actions."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
