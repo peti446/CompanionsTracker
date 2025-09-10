@@ -1,6 +1,9 @@
 local ns = select(2, ...)
 --- @type AceGUI-3.0
 local AceGUI = ns.AceGUI
+local L = ns.L
+--- @type CompanionsTrackerConstants
+local Constants = ns.Constants
 local Utils = ns.Utils
 local Type, Version = "ExpansionOverviewFrame", 1
 if not AceGUI or (AceGUI:GetWidgetCount(Type) or 0) >= Version then return end
@@ -29,10 +32,22 @@ function WidgetMethods.OnRelease(self)
     self.scrollFrame:ReleaseChildren()
 end
 
+function WidgetMethods.LayoutFinished(self, width, height)
+    self.scrollFrame:LayoutFinished(width, height)
+end
+
+function WidgetMethods.OnWidthSet(self, width)
+    self.scrollFrame:SetWidth(width)
+end
+
+function WidgetMethods.OnHeightSet(self, height)
+    self.scrollFrame:SetHeight(height)
+end
+
 function WidgetMethods.OnAcquire(self)
     self.frame:SetParent(UIParent)
     self.frame:SetFrameStrata("MEDIUM")
-
+    self.sortDropdown:SetUserData("self", self)
     self:ApplyStatus()
     self:SetTitle()
     self:SetTabsInfo({})
@@ -83,6 +98,13 @@ local function OnCheckButtonValueChanged(button, _event, checked)
     self.subFrameRenderFrame.frame:Hide()
 end
 
+local function OnSortValueChanged(dropdown, _event, value)
+    --- @type ExpansionsOverviewFrame
+    local self = dropdown:GetUserData("self")
+    -- Just fire the event to the parent frame
+    self.frame.obj:Fire("OnSortTypeChanged", value)
+end
+
 function WidgetMethods.SetSelectedTab(self, tabValue)
     local tabData = GetTabDataFromValue(self, tabValue)
     if tabData == nil then
@@ -91,6 +113,14 @@ function WidgetMethods.SetSelectedTab(self, tabValue)
     end
 
     OnCheckButtonValueChanged(tabData.buttonRef, nil, true)
+end
+
+function WidgetMethods.GetSortType(self)
+    return self.sortDropdown:GetValue() or Constants.Enums.SortTypes.DEFAULT
+end
+
+function WidgetMethods.GetSelectedTab(self)
+    return self.selectedTab
 end
 
 --- Sets the tab data for the widget
@@ -332,8 +362,6 @@ local function Constructor()
     expanionBackground:SetTexture("Interface\\EncounterJournal\\UI-EJ-Cataclysm")
     expanionBackground:SetAllPoints(characterListFrame, true)
 
-
-
     -- TODO: Change for normal frame, and make add child to go directly here or to the subFrame during the render funtion calls
     --- @type AceGUIScrollFrame
     local scrollFrame = AceGUI:Create("ScrollFrame") --[[@as AceGUIScrollFrame]]
@@ -351,6 +379,33 @@ local function Constructor()
     expansionTitle:SetText("Expansion Name")
     expansionTitle:SetJustifyV("BOTTOM")
     expansionTitle:SetJustifyH("CENTER")
+
+    --- @type AceGUIDropdown
+    local sortDropdown = AceGUI:Create("Dropdown") --[[@as AceGUIDropdown]]
+    sortDropdown.frame:SetParent(characterListFrame)
+    sortDropdown:ClearAllPoints()
+    sortDropdown:SetPoint("TOPRIGHT", characterListFrame, -10, -10)
+    sortDropdown:SetWidth(150)
+    sortDropdown:SetText( L["Default"])
+    sortDropdown:SetList({
+        [Constants.Enums.SortTypes.DEFAULT] = L["Default"],
+        [Constants.Enums.SortTypes.MISSIONS_COMPLETED] = L["Missions Completed"],
+        [Constants.Enums.SortTypes.MISSIONS_IN_PROGRESS] = L["Missions In Progress"],
+        [Constants.Enums.SortTypes.MISSIONS_AVAILABLE] = L["Missions Available"],
+    })
+    sortDropdown:SetValue(Constants.Enums.SortTypes.DEFAULT)
+    sortDropdown:SetMultiselect(false)
+    sortDropdown:SetCallback("OnValueChanged", OnSortValueChanged)
+
+
+    local sortDropdownLabel = characterListFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    sortDropdownLabel:SetParent(sortDropdown.frame)
+    sortDropdownLabel:ClearAllPoints()
+    sortDropdownLabel:SetPoint("RIGHT", sortDropdown.frame, "LEFT", -5, 0)
+    sortDropdownLabel:SetText(L["Sort by:"])
+    sortDropdownLabel:SetJustifyV("BOTTOM")
+    sortDropdownLabel:SetJustifyH("RIGHT")
+
 
     --- @type AceGUISimpleGroup
     local subFrameRenderFrame = AceGUI:Create("SimpleGroup") --[[@as AceGUISimpleGroup]]
@@ -373,6 +428,7 @@ local function Constructor()
         expanionBackground = expanionBackground,
         expansionTitle = expansionTitle,
         scrollFrame = scrollFrame,
+        sortDropdown = sortDropdown,
         -- We are just passing the content in, technically this will overwrite the object fromt he scrollfrae to self
         -- therfore no layout is done internally nor any release children, as children will live in this widget, its a bit wired
         -- might need to find a better way to do this

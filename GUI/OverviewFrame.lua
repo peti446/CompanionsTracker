@@ -9,6 +9,9 @@ local Config = ns.Config
 --- @type CompanionsTrackerUtils
 local Utils = ns.Utils
 
+--- @type CompanionsTrackerConstants
+local Constants = ns.Constants
+
 --- @type AceGUI-3.0
 local AceGUI = ns.AceGUI
 
@@ -50,7 +53,7 @@ function CompanionsTracker:ShowOverviewFrame(selectedExpansionID)
     frame:SetTitle(L["Companions Tracker"])
     frame:SetPortraitTexture(expansionData.iconPath)
     local tabData = {}
-    for _, data in ipairs(ns.Constants.GarrionData) do
+    for _, data in ipairs(Constants.GarrionData) do
         table.insert(tabData, {
             buttonIcon = data.iconPath,
             bgTexture = data.frameBackground,
@@ -67,6 +70,7 @@ function CompanionsTracker:ShowOverviewFrame(selectedExpansionID)
     frame:SetTabsInfo(tabData)
     frame:SetCallback("OnTabChanged", OverviewFrame.OnTabChanged)
     frame:SetCallback("RenderSubPath", OverviewFrame.RenderSubPath)
+    frame:SetCallback("OnSortTypeChanged", OverviewFrame.OnSortTypeChanged)
     frame:Show()
     frame:SetSelectedTab(selectedExpansionID)
 end
@@ -276,12 +280,22 @@ function OverviewFrame.OnCharacterbuttonClicked(button)
     frame:SetNavBarPath(unpack(GetPathData(button:GetUserData("garrisonID"), button:GetUserData("characterName"))))
 end
 
+function OverviewFrame.OnSortTypeChanged()
+    if(frame == nil or frame:GetSelectedTab() == nil) then
+        return
+    end
+
+     OverviewFrame.OnTabChanged(frame, nil, frame:GetSelectedTab())
+end
+
 function OverviewFrame.OnTabChanged(frame, _event, value)
     local allData = Config.db.global.GarrisonsData
     if(allData == nil or frame == nil) then
         return
     end
 
+    local framesToInsert = {}
+    local sortedKeys = {}
     frame:ReleaseChildren()
     for name, data in pairs(allData) do
         local garrisonData = data[value]
@@ -341,7 +355,23 @@ function OverviewFrame.OnTabChanged(frame, _event, value)
                 end
             end
 
-            frame:AddChild(button)
+            -- Use the button's unique frame name as the key
+            local widgetID = button.frame:GetName()
+            framesToInsert[widgetID] = {button= button, numberCompleted=missionsCompleted, missionsInProgress=missionsInProgress, missionsAvailable=missionsAvailable}
+            table.insert(sortedKeys, widgetID)
         end
+    end
+
+    if (frame:GetSortType() ~= Constants.Enums.SortTypes.DEFAULT) then
+        local sortFuncs = {
+            [Constants.Enums.SortTypes.MISSIONS_COMPLETED] = function(a, b) return framesToInsert[a].numberCompleted > framesToInsert[b].numberCompleted  end,
+            [Constants.Enums.SortTypes.MISSIONS_IN_PROGRESS] = function(a, b) return framesToInsert[a].missionsInProgress > framesToInsert[b].missionsInProgress  end,
+            [Constants.Enums.SortTypes.MISSIONS_AVAILABLE] = function(a, b) return framesToInsert[a].missionsAvailable > framesToInsert[b].missionsAvailable  end,
+        }
+        table.sort(sortedKeys, sortFuncs[frame:GetSortType()])
+    end
+
+    for _, key in ipairs(sortedKeys) do
+        frame:AddChild(framesToInsert[key].button)
     end
 end
