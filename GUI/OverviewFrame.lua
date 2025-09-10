@@ -260,8 +260,8 @@ function OverviewFrame.OnCharacterbuttonClicked(button)
                     {
                         text = otherName,
                         id = otherName,
-                        func = function (self, id, _navNar)
-                            frame:SetNavBarPath(unpack(GetPathData(self.owner.data.userData.garrisonID, id)))
+                        func = function (self, id, navBar)
+                            frame:SetNavBarPath(unpack(GetPathData(navBar.navList[2].data.userData.garrisonID, id)))
                         end
                     })
                 end

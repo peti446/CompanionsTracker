@@ -1,4 +1,4 @@
-## Interface: 100205
+## Interface: 110000
 ## Title: Companions Tracker
 ## Title-ruRU: Трекер компаньонов
 ## Author: Geloch (Sanguino - EU Horde)
@@ -9,6 +9,7 @@
 ## LoadOnDemand: 0
 ## SavedVariables: CompanionsTrackerDB
 ## X-Curse-Project-ID: 944606
+## X-Wago-ID: L6JDy2Gv
 
 embeds_libs.xml
 embeds_locales.xml
