@@ -1,4 +1,4 @@
-## Interface: 110200
+## Interface: 120000
 ## Title: Companions Tracker
 ## Title-ruRU: Трекер компаньонов
 ## Author: Geloch (Sanguino - EU Horde)

@@ -20,3 +20,4 @@
 ---@field containerID? number
 ---@field plotID? number
 ---@field shipmentType? number
+---@field Mask MaskTexture

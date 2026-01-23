@@ -26,7 +26,11 @@ end
 function CompanionsTracker:OnEnable()
     Utils:DebugPrint("Addon Enabling")
     self:InitMinimapIcon()
-    self.Mixins.ExpansionLandingPageMixin:Embed()
+     for _, data in ipairs(CompanionsTracker.Mixins) do
+        if(data.RequiredAddon) then
+            C_AddOns.LoadAddOn(data.RequiredAddon)
+        end
+    end
     self:RegisterMessage(self.Events.GarrionDataUpdated)
 
     local module = self:GetModule("Notifications") --[[@as NotificationsModule]]
