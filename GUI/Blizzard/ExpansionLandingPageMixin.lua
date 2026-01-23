@@ -23,8 +23,9 @@ CompanionsTracker.Mixins.ExpansionLandingPageMixin = ExpansionLandingPageMixin
 
 --- Embed all necesary frames to the ExpansionLandingPage to show garrison landing page later
 function ExpansionLandingPageMixin:Embed()
-    CompanionsTracker:HookScript(ExpansionLandingPage, "OnShow", ExpansionLandingPageMixin.OnShow)
-    CompanionsTracker:HookScript(ExpansionLandingPage, "OnHide", ExpansionLandingPageMixin.OnHide)
+    CompanionsTracker:HookScript(GarrisonLandingPage, "OnShow", ExpansionLandingPageMixin.OnShow)
+    CompanionsTracker:HookScript(GarrisonLandingPage, "OnHide", ExpansionLandingPageMixin.OnHide)
+    -- ExpansionLandingPage
     CompanionsTracker:SecureHook("ShowGarrisonLandingPage", ExpansionLandingPageMixin.GarrisonLandingPageShown)
 end
 

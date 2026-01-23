@@ -61,10 +61,11 @@ function methods:SetShipmentInfo(shipmentType, info)
     local shipmentFrame = self.frame
     local applyMask = shipmentType ~= ConstantEnums.ShipmentTypes.SHIPMENT_TYPE_FOLLOWER
 
+    shipmentFrame.Icon:SetTexture(info.texture);
     if (applyMask) then
-		SetPortraitToTexture(shipmentFrame.Icon, info.texture);
+        shipmentFrame.Icon:AddMaskTexture(shipmentFrame.Mask);
 	else
-		shipmentFrame.Icon:SetTexture(info.texture);
+        shipmentFrame.Icon:RemoveMaskTexture(shipmentFrame.Mask);
 	end
 
 	shipmentFrame.Name:SetText(info.name);
@@ -105,6 +106,9 @@ local function Constructor()
     frame:SetScript("OnEnter", Frame_OnEnter)
     frame:SetScript("OnLeave", Frame_OnLeave)
     frame:SetScript("OnClick", Frame_OnClick)
+    frame.Mask = frame:CreateMaskTexture();
+    frame.Mask:SetAllPoints(frame.Icon)
+    frame.Mask:SetTexture("Interface/CHARACTERFRAME/TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
 
     --- @type BlizzardGarrisonLandingPageReportShipmentStatusTemplate
     local widget = {
