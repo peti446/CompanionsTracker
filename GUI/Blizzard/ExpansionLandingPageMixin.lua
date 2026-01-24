@@ -16,15 +16,16 @@ local L = ns.L
 
 --- @class ExpansionLandingPageMixin
 local ExpansionLandingPageMixin = {
-    RequieredAddon = "Blizzard_GarrisonUI"
+    RequieredAddon = "Blizzard_EncounterJournal",
+    LoadOnEnable = false,
 }
 CompanionsTracker.Mixins.ExpansionLandingPageMixin = ExpansionLandingPageMixin
 
 
 --- Embed all necesary frames to the ExpansionLandingPage to show garrison landing page later
 function ExpansionLandingPageMixin:Embed()
-    CompanionsTracker:HookScript(GarrisonLandingPage, "OnShow", ExpansionLandingPageMixin.OnShow)
-    CompanionsTracker:HookScript(GarrisonLandingPage, "OnHide", ExpansionLandingPageMixin.OnHide)
+    CompanionsTracker:SecureHookScript(EncounterJournal, "OnShow", ExpansionLandingPageMixin.OnShow)
+    CompanionsTracker:SecureHookScript(EncounterJournal, "OnHide", ExpansionLandingPageMixin.OnHide)
     -- ExpansionLandingPage
     CompanionsTracker:SecureHook("ShowGarrisonLandingPage", ExpansionLandingPageMixin.GarrisonLandingPageShown)
 end
@@ -104,15 +105,14 @@ end
 
 --- Call back to be called when the ExpansionLandingPage is shown
 function ExpansionLandingPageMixin:OnShow()
-    ExpansionLandingPage:SetScale(0.95)
     --- @class AceGUISimpleGroup : AceGUIWidget
     --- @field frame Frame
     local group = AceGUI:Create("SimpleGroup")
-    group.frame:SetParent(ExpansionLandingPage)
+    group.frame:SetParent(EncounterJournalJourneysFrame)
     group:ClearAllPoints()
     group:SetHeight(400)
     group:SetWidth(200)
-    group:SetPoint("TOPLEFT", ExpansionLandingPage, "TOPRIGHT", -40, -75)
+    group:SetPoint("TOPLEFT", EncounterJournalJourneysFrame, "TOPRIGHT", 0, -75)
     group:SetLayout("List")
     group.frame:SetFrameStrata("MEDIUM")
     group.frame:Show()

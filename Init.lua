@@ -26,9 +26,11 @@ end
 function CompanionsTracker:OnEnable()
     Utils:DebugPrint("Addon Enabling")
     self:InitMinimapIcon()
-     for _, data in ipairs(CompanionsTracker.Mixins) do
-        if(data.RequiredAddon) then
-            C_AddOns.LoadAddOn(data.RequiredAddon)
+    for _, data in pairs(CompanionsTracker.Mixins) do
+        if(data.RequieredAddon and data.LoadOnEnable) then
+            C_AddOns.LoadAddOn(data.RequieredAddon)
+        elseif(not data.RequieredAddon) then
+            data:Embed()
         end
     end
     self:RegisterMessage(self.Events.GarrionDataUpdated)
