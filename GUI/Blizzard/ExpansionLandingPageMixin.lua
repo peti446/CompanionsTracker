@@ -16,14 +16,23 @@ local L = ns.L
 
 --- @class ExpansionLandingPageMixin
 local ExpansionLandingPageMixin = {
-    RequieredAddon = "Blizzard_EncounterJournal",
+    RequiredAddon = "Blizzard_EncounterJournal",
     LoadOnEnable = false,
+    IsEmbedded = false,
 }
 CompanionsTracker.Mixins.ExpansionLandingPageMixin = ExpansionLandingPageMixin
 
-
 --- Embed all necesary frames to the ExpansionLandingPage to show garrison landing page later
 function ExpansionLandingPageMixin:Embed()
+    if (EncounterJournal == nil) then
+        return
+    end
+
+    if(self.IsEmbedded) then
+        return
+    end
+    self.IsEmbedded = true
+
     CompanionsTracker:SecureHookScript(EncounterJournal, "OnShow", ExpansionLandingPageMixin.OnShow)
     CompanionsTracker:SecureHookScript(EncounterJournal, "OnHide", ExpansionLandingPageMixin.OnHide)
     -- ExpansionLandingPage
