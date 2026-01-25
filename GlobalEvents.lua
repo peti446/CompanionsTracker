@@ -10,7 +10,7 @@ local Config = ns.Config
 local Utils = ns.Utils
 
 function CompanionsTracker:ADDON_LOADED(_event, name)
-    for _, data in ipairs(CompanionsTracker.Mixins) do
+    for _, data in pairs(CompanionsTracker.Mixins) do
         if(data.RequiredAddon == name) then
             data:Embed()
         end
