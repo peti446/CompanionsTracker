@@ -1,0 +1,90 @@
+name: Create Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to tag (e.g., v1.2.3). If not provided, will auto-increment patch version'
+        required: false
+        type: string
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if user is repository owner
+        run: |
+          if [ "${{ github.actor }}" != "${{ github.repository_owner }}" ]; then
+            echo "Error: Only the repository owner can trigger this workflow"
+            exit 1
+          fi
+          echo "User ${{ github.actor }} is authorized to create tags"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            # Use provided version
+            VERSION="${{ github.event.inputs.version }}"
+            echo "Using provided version: $VERSION"
+          else
+            # Get latest tag and increment patch version
+            LATEST_TAG=$(git tag --list 'v*' --sort=-version:refname | head -1)
+            if [ -z "$LATEST_TAG" ]; then
+              # No existing tags, start with v0.0.1
+              VERSION="v0.0.1"
+              echo "No existing tags found, starting with: $VERSION"
+            else
+              echo "Latest tag: $LATEST_TAG"
+              # Extract version numbers (remove 'v' prefix)
+              VERSION_WITHOUT_V=${LATEST_TAG#v}
+              
+              # Split version into parts
+              IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_WITHOUT_V"
+              
+              # Increment patch version
+              PATCH=$((PATCH + 1))
+              
+              # Construct new version
+              VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+              echo "Auto-incremented version: $VERSION"
+            fi
+          fi
+          
+          # Validate version format
+          if [[ ! $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Version must be in format vX.Y.Z (e.g., v1.2.3)"
+            exit 1
+          fi
+          
+          # Check if tag already exists
+          if git tag --list | grep -q "^$VERSION$"; then
+            echo "Error: Tag $VERSION already exists"
+            exit 1
+          fi
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create and push tag
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          echo "Creating tag: $VERSION"
+          
+          # Create tag
+          git tag -a "$VERSION" -m "Release $VERSION"
+          
+          # Push tag
+          git push origin "$VERSION"
+          
+          echo "Successfully created and pushed tag: $VERSION"
